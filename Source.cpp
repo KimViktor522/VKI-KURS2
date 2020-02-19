@@ -42,28 +42,54 @@ struct List {
 		current->next = nullptr;
 		return current;
 	}
+	//вставка в определенную позицию 
+	Node* inst_in_pos(int position, int data) {
+		if (position == 1) {
+			return push_front(data);
+		}
+		Node* current = new Node;
+		Node* currentOld{ get_front() };
+		int i{ 1 };
+		while (currentOld->next != nullptr) {			
+			if (i == position - 1) {
+				current->next = currentOld->next;
+			}
+			if (i == position) {
+				current->valne = data;
+				break;
+			}
+			++i;
+			currentOld = currentOld->next;
+		}
+		currentOld = get_front();
+		while (currentOld->next != nullptr) {
+			if (current->next == currentOld->next) {
+				currentOld->next = current;
+				break;
+			}
+			currentOld = currentOld->next;
+		}		
+		
+		return currentOld;
+	}
 	//удаление начала и конца
 	void del_front_and_back() {
 		Node* current{ nullptr };
 		Node* currentF{ get_front() };
-		Node* currentB{ get_back() };
-		cout << "\n" << currentF->valne << "  " << currentB->valne << "\n";
-		cout << currentF->next << "  " << currentB->next << "\n" << "\n";
 		current = currentF->next;
-		currentB = current;
+		Node* currentB{ current };
 		delete currentF;
-		/*Node* currentBuf{ nullptr };
+		Node* currentBuf{ nullptr };
 		while (currentB->next!=nullptr){
 			currentBuf = currentB->next;
-			cout << currentBuf->valne << "  ";
-			if (currentBuf->next != nullptr) {
+			if (currentBuf->next == nullptr) {
 				currentB->next = nullptr;
-				current = currentB;
+				break;
 			}
 			else currentB = currentB->next;
 		}
-		cout << "\n";*/
 		front = current;
+		delete currentBuf;
 	}
 
 	//удаление всего 
@@ -90,6 +116,7 @@ struct List {
 };
 
 int main() {
+	system("chcp 1251");
 	List list;
 	list.print();
 	list.push_front(5);
@@ -103,11 +130,16 @@ int main() {
 	list.print();
 	list.del_front_and_back();
 	list.print();
+
+	int position{}, number{};
+	cout << "Введите номер ячейки вкоторую хотите вставить число: ";
+	cin >> position;
+	cout << endl << "это число: ";
+	cin >> number;
+	list.inst_in_pos(position, number);
+
+	list.print();
 	list.clear();
-	list.print();
-	list.push_front(1);
-	list.push_back(2);
-	list.print();
 	system("pause");
 	return 0;
 }
