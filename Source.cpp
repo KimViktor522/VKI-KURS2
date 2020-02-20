@@ -1,6 +1,5 @@
 #include <iostream>
 #include <cstdio>
-#include <list>
 
 using namespace std;
 
@@ -10,11 +9,11 @@ struct Node {
 };
 
 struct List {
-	//÷èñëî ñïðàâà
+	//Ã·Ã¨Ã±Ã«Ã® Ã±Ã¯Ã°Ã Ã¢Ã 
 	Node* front{ nullptr };
 	Node* get_front() { return front; };
 
-	//÷èñëî ñëåâà
+	//Ã·Ã¨Ã±Ã«Ã® Ã±Ã«Ã¥Ã¢Ã 
 	Node* back{ nullptr };
 	Node* get_back() {
 		Node* current{ get_front() };
@@ -25,7 +24,7 @@ struct List {
 		return back;
 	}
 
-	//âñòàâêà ÷èñëà âïðàâî
+	//Ã¢Ã±Ã²Ã Ã¢ÃªÃ  Ã·Ã¨Ã±Ã«Ã  Ã¢Ã¯Ã°Ã Ã¢Ã®
 	Node* push_front(int data) { 
 		Node* current = new Node;
 		current->valne = data;
@@ -33,7 +32,7 @@ struct List {
 		front = current;
 		return current;
 	}
-	//âñòàâêà ÷èñëà âëåâî
+	//Ã¢Ã±Ã²Ã Ã¢ÃªÃ  Ã·Ã¨Ã±Ã«Ã  Ã¢Ã«Ã¥Ã¢Ã®
 	Node* push_back(int data) {
 		Node* current = new Node;
 		get_back();
@@ -42,7 +41,7 @@ struct List {
 		current->next = nullptr;
 		return current;
 	}
-	//âñòàâêà â îïðåäåëåííóþ ïîçèöèþ 
+	//Ã¢Ã±Ã²Ã Ã¢ÃªÃ  Ã¢ Ã®Ã¯Ã°Ã¥Ã¤Ã¥Ã«Ã¥Ã­Ã­Ã³Ã¾ Ã¯Ã®Ã§Ã¨Ã¶Ã¨Ã¾ 
 	Node* inst_in_pos(int position, int data) {
 		if (position == 1) {
 			return push_front(data);
@@ -72,7 +71,7 @@ struct List {
 		
 		return currentOld;
 	}
-	//óäàëåíèå íà÷àëà è êîíöà
+	//Ã³Ã¤Ã Ã«Ã¥Ã­Ã¨Ã¥ Ã­Ã Ã·Ã Ã«Ã  Ã¨ ÃªÃ®Ã­Ã¶Ã 
 	void del_front_and_back() {
 		Node* current{ nullptr };
 		Node* currentF{ get_front() };
@@ -92,11 +91,11 @@ struct List {
 		delete currentBuf;
 	}
 
-	//óäàëåíèå âñåãî 
+	//Ã³Ã¤Ã Ã«Ã¥Ã­Ã¨Ã¥ Ã¢Ã±Ã¥Ã£Ã® 
 	void clear() { 
 		Node* current{ get_front() };
 		Node* currentDel{ nullptr };
-		while (current->next != nullptr){///ïåðåäåëàòü
+		while (current->next != nullptr){///Ã¯Ã¥Ã°Ã¥Ã¤Ã¥Ã«Ã Ã²Ã¼
 			currentDel = current->next;
 			current->valne = currentDel->valne;	
 			current = current->next;
@@ -106,7 +105,7 @@ struct List {
 		back = nullptr;
 	}
 
-	//âûâîä
+	//Ã¢Ã»Ã¢Ã®Ã¤
 	void print() {
 		for (Node* current{ get_front() }; current != nullptr; current = current->next) {
 			cout << current->valne << "  ";
@@ -132,9 +131,9 @@ int main() {
 	list.print();
 
 	int position{}, number{};
-	cout << "Ââåäèòå íîìåð ÿ÷åéêè âêîòîðóþ õîòèòå âñòàâèòü ÷èñëî: ";
+	cout << "Ã‚Ã¢Ã¥Ã¤Ã¨Ã²Ã¥ Ã­Ã®Ã¬Ã¥Ã° Ã¿Ã·Ã¥Ã©ÃªÃ¨ Ã¢ÃªÃ®Ã²Ã®Ã°Ã³Ã¾ ÃµÃ®Ã²Ã¨Ã²Ã¥ Ã¢Ã±Ã²Ã Ã¢Ã¨Ã²Ã¼ Ã·Ã¨Ã±Ã«Ã®: ";
 	cin >> position;
-	cout << endl << "ýòî ÷èñëî: ";
+	cout << endl << "Ã½Ã²Ã® Ã·Ã¨Ã±Ã«Ã®: ";
 	cin >> number;
 	list.inst_in_pos(position, number);
 
