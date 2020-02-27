@@ -95,6 +95,43 @@ public:
 		return current;
 	}
 
+	Node* swap_pos(int position1, int position2) {
+		if ((position1 > listsize) || (position2 > listsize)) {
+			cout << "NOT CORRECT POS!!!";
+			return front;
+		}
+		Node* current1 = new Node;
+		Node* current2 = new Node;
+		Node* currentOld{ get_front() };
+		int i{ 1 };
+		while (currentOld->next != nullptr) {
+			if (i == position1) {
+				current1 = currentOld;
+			}
+			if (i == position2) {
+				current2 = currentOld;
+			}
+			i++;
+			currentOld = currentOld->next;
+		}
+		i = 1;
+		while (currentOld->next != nullptr) {
+			if (i == position1) {
+				currentOld->value = current2->value;
+				currentOld->behind->next = currentOld;
+				currentOld->next->behind = currentOld;
+			}
+			if (i == position2) {
+				currentOld->value = current1->value;
+				currentOld->behind->next = currentOld;
+				currentOld->next->behind = currentOld;
+			}
+			i++;
+			currentOld = currentOld->next;
+		}
+		return currentOld;
+	}
+
 	//удаление начала и конца
 	void del_front_and_back() {
 		if (!listsize) {
@@ -176,7 +213,18 @@ int main() {
 	cin >> position;
 	cout << endl << "это число: ";
 	cin >> number;
+	cout << endl;
 	list.inst_in_pos(position, number);
+
+	list.print();
+
+	int position1{}, position2{};
+	cout << "выберите позицию 1:";
+	cin >> position1;
+	cout << endl << "позицию 2:";
+	cin >> position2;
+	cout << endl;
+	list.swap_pos(position1, position2);
 	
 	list.print();
 	list.clear();
