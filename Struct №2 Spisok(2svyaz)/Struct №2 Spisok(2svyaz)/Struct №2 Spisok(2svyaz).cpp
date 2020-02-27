@@ -5,7 +5,7 @@ using namespace std;
 class List{
 public:
 	struct Node {
-		int valne{};
+		int value{};
 		Node* next;
 		Node* behind;
 	};
@@ -32,13 +32,13 @@ private:
 public:
 
 	~List() {
-		//clear();
+		clear();
 	}
 
 	//вставка числа вправо
 	Node* push_front(int data) {
 		Node* current = new Node;
-		current->valne = data;
+		current->value = data;
 		current->next = front;
 		current->behind = nullptr;
 		if (listsize) {
@@ -53,14 +53,14 @@ public:
 	Node* push_back(int data) {
 		Node* current = new Node;
 		get_back();
-		current->valne = data;
+		current->value = data;
 		back->next = current;
 		current->next = nullptr;
 		current->behind = back;
 		++listsize;
 		return current;
 	}
-	/*
+	
 
 	//вставка в определенную позицию 
 	Node* inst_in_pos(int position, int data) {
@@ -82,23 +82,18 @@ public:
 				current->next = currentOld->next;
 			}
 			if (i == position) {
-				current->valne = data;
+				current->value = data;
+				current->behind = currentOld->behind;
+				current->behind->next = current;
+				current->next->behind = current;
 				break;
 			}
 			++i;
 			currentOld = currentOld->next;
 		}
-		currentOld = get_front();
-		while (currentOld->next != nullptr) {
-			if (current->next == currentOld->next) {
-				currentOld->next = current;
-				break;
-			}
-			currentOld = currentOld->next;
-		}
-
-		return currentOld;
-	}*/
+		listsize++;
+		return current;
+	}
 
 	//удаление начала и конца
 	void del_front_and_back() {
@@ -153,7 +148,7 @@ public:
 	//вывод
 	void print() {
 		for (Node* current{ get_front() }; current != nullptr; current = current->next) {
-			cout << current->valne << "  " << current->next << "  " << current->behind << endl;
+			cout << current->value << "  " << current->next << "  " << current->behind << endl;
 		}
 		cout << endl;
 	}
@@ -171,14 +166,19 @@ int main() {
 	list.push_back(2);
 	list.print();
 	list.del_front_and_back();
-	/*
+	list.push_front(3);
+	list.push_front(9);
+	list.push_back(7);
+	list.print();
+	
 	int position{}, number{};
 	cout << "Введите номер ячейки вкоторую хотите вставить число: ";
 	cin >> position;
 	cout << endl << "это число: ";
 	cin >> number;
-	list.inst_in_pos(position, number);*/
-
+	list.inst_in_pos(position, number);
+	
+	list.print();
 	list.clear();
 	system("pause");
 	return 0;

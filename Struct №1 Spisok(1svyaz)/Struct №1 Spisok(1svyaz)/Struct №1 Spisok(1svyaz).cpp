@@ -80,7 +80,7 @@ struct List {
 			}
 			currentOld = currentOld->next;
 		}
-
+		listsize++;
 		return currentOld;
 	}
 
