@@ -70,8 +70,8 @@ public:
 		if (position == listsize + 1) {
 			return push_back(data);
 		}
-		if (position > listsize + 1) {
-			cout << "NOT CORRECT!!!" << endl;
+		if ((position > listsize + 1) || (position < 1)) {
+			cout << "NOT CORRECT POS!!!" << endl;
 			return front;
 		}
 		Node* current = new Node;
@@ -95,40 +95,86 @@ public:
 		return current;
 	}
 
+	//мен€ть 2 элемента в задоной поиции
 	Node* swap_pos(int position1, int position2) {
-		if ((position1 > listsize) || (position2 > listsize)) {
-			cout << "NOT CORRECT POS!!!";
+		if ((position1 > listsize) || (position2 > listsize) || (position1 < 1) || (position2 < 1)) {
+			cout << "NOT CORRECT POS!!!" << endl;
 			return front;
 		}
-		Node* current1 = new Node;
-		Node* current2 = new Node;
 		Node* currentOld{ get_front() };
 		int i{ 1 };
-		while (currentOld->next != nullptr) {
+		Node* current1n {nullptr};
+		Node* current1b{ nullptr };
+		Node* current1_n { nullptr };
+		Node* current1_b { nullptr };
+		Node* current2n{ nullptr };
+		Node* current2b{ nullptr };
+		Node* current2_n{ nullptr };
+		Node* current2_b{ nullptr };
+
+		while (currentOld != nullptr) {
 			if (i == position1) {
-				current1 = currentOld;
+				current1_n = currentOld;
+				current1n = currentOld->next;
+				current1b = currentOld->behind;
+				current1_b = currentOld->next->behind;
 			}
 			if (i == position2) {
-				current2 = currentOld;
+				current2_n = currentOld;
+				current2n = currentOld->next;
+				current2b = currentOld->behind;
+				current2_b = currentOld->next->behind;
+			}
+			i++;
+			currentOld = currentOld->next;
+		}
+		currentOld = get_front();
+		i = 0;
+		while (currentOld != nullptr) {
+			if (i == position1) {
+				currentOld->behind->next = current2_n;
+				currentOld->next = current2n;
+				currentOld->behind = current2b;
+				currentOld->next->behind = current2_b;
+			}
+			if (i == position2) {
+				currentOld->behind->next = current1_n;
+				currentOld->next = current1n;
+				currentOld->behind = current1b;
+				currentOld->next->behind = current1_b;
+			}
+			i++;
+			currentOld = currentOld->next;
+		}
+
+		/* //колхоз
+		int current1{}, current2{};
+		while (currentOld != nullptr) {
+			if (i == position1) {
+				current1 = currentOld->value;
+			}
+			if (i == position2) {
+				current2 = currentOld->value;
 			}
 			i++;
 			currentOld = currentOld->next;
 		}
 		i = 1;
-		while (currentOld->next != nullptr) {
+		currentOld = get_front();
+		while (currentOld != nullptr) {
 			if (i == position1) {
-				currentOld->value = current2->value;
-				currentOld->behind->next = currentOld;
-				currentOld->next->behind = currentOld;
+				currentOld->value = current2;
+				if (currentOld->behind != nullptr) currentOld->behind->next = currentOld;
+				if (currentOld->next != nullptr) currentOld->next->behind = currentOld;
 			}
 			if (i == position2) {
-				currentOld->value = current1->value;
-				currentOld->behind->next = currentOld;
-				currentOld->next->behind = currentOld;
+				currentOld->value = current1;
+				if (currentOld->behind != nullptr) currentOld->behind->next = currentOld;
+				if (currentOld->next != nullptr) currentOld->next->behind = currentOld;
 			}
 			i++;
 			currentOld = currentOld->next;
-		}
+		}*/
 		return currentOld;
 	}
 
@@ -219,9 +265,9 @@ int main() {
 	list.print();
 
 	int position1{}, position2{};
-	cout << "выберите позицию 1:";
+	cout << "выберите позицию 1: ";
 	cin >> position1;
-	cout << endl << "позицию 2:";
+	cout << endl << "позицию 2: ";
 	cin >> position2;
 	cout << endl;
 	list.swap_pos(position1, position2);
