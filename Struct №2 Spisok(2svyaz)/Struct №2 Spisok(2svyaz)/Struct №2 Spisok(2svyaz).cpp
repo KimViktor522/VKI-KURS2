@@ -103,14 +103,14 @@ public:
 		}
 		Node* currentOld{ get_front() };
 		int i{ 1 };
-		Node* current1n {nullptr};
-		Node* current1b{ nullptr };
+		Node* current1n { nullptr };
+		Node* current1b { nullptr };
 		Node* current1_n { nullptr };
 		Node* current1_b { nullptr };
-		Node* current2n{ nullptr };
-		Node* current2b{ nullptr };
-		Node* current2_n{ nullptr };
-		Node* current2_b{ nullptr };
+		Node* current2n { nullptr };
+		Node* current2b { nullptr };
+		Node* current2_n { nullptr };
+		Node* current2_b { nullptr };
 
 		while (currentOld != nullptr) {
 			if (i == position1) {
@@ -129,24 +129,33 @@ public:
 			currentOld = currentOld->next;
 		}
 		currentOld = get_front();
-		i = 0;
+		i = 1;
 		while (currentOld != nullptr) {
+			if (i == position1 - 1) {
+				if (currentOld->next != nullptr) currentOld->next = current2_n;
+			}
 			if (i == position1) {
-				currentOld->behind->next = current2_n;
-				currentOld->next = current2n;
-				currentOld->behind = current2b;
-				currentOld->next->behind = current2_b;
+				if (currentOld->next != nullptr) currentOld->next = current1n;
+				if (currentOld->behind != nullptr) currentOld->behind = current1b;
+			}
+			if (i == position1 + 1) {
+				if (currentOld->behind != nullptr) currentOld->behind = current2_b;
+			}
+			if (i == position2 - 1) {
+				if (currentOld->next != nullptr) currentOld->next = current1_n;
 			}
 			if (i == position2) {
-				currentOld->behind->next = current1_n;
-				currentOld->next = current1n;
-				currentOld->behind = current1b;
-				currentOld->next->behind = current1_b;
+				if (currentOld->next != nullptr) currentOld->next = current2n;
+				if (currentOld->behind != nullptr) currentOld->behind = current2b;
 			}
+			if (i == position2 + 1) {
+				if (currentOld->behind != nullptr) currentOld->behind = current1_b;
+			}
+			//print();
 			i++;
 			currentOld = currentOld->next;
 		}
-
+		cout << endl;
 		/* //колхоз
 		int current1{}, current2{};
 		while (currentOld != nullptr) {
