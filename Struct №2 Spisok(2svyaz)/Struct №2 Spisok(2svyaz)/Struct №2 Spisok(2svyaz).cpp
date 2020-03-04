@@ -103,59 +103,72 @@ public:
 		}
 		Node* currentOld{ get_front() };
 		int i{ 1 };
-		Node* current1n { nullptr };
-		Node* current1b { nullptr };
-		Node* current1_n { nullptr };
-		Node* current1_b { nullptr };
-		Node* current2n { nullptr };
-		Node* current2b { nullptr };
-		Node* current2_n { nullptr };
-		Node* current2_b { nullptr };
+		Node* current1n = new Node;
+		Node* current1b = new Node;
+		Node* current1_n = new Node;
+		Node* current1_b = new Node;
+		Node* current2n = new Node;
+		Node* current2b = new Node;
+		Node* current2_n = new Node;
+		Node* current2_b = new Node;
 
 		while (currentOld != nullptr) {
 			if (i == position1) {
 				current1_n = currentOld;
 				current1n = currentOld->next;
 				current1b = currentOld->behind;
-				current1_b = currentOld->next->behind;
+				if (currentOld->next != nullptr) current1_b = currentOld->next->behind;
 			}
 			if (i == position2) {
 				current2_n = currentOld;
 				current2n = currentOld->next;
 				current2b = currentOld->behind;
-				current2_b = currentOld->next->behind;
+				if (currentOld->next != nullptr) current2_b = currentOld->next->behind;
 			}
 			i++;
 			currentOld = currentOld->next;
 		}
 		currentOld = get_front();
 		i = 1;
+		bool check1{}, check2{};
 		while (currentOld != nullptr) {
 			if (i == position1 - 1) {
-				if (currentOld->next != nullptr) currentOld->next = current2_n;
+				currentOld->next = current2_n;
+			}
+			else if ((position1 == 1) && (!check1)) {
+				currentOld = current2_n;
+				check1 = true;
 			}
 			if (i == position1) {
-				if (currentOld->next != nullptr) currentOld->next = current1n;
-				if (currentOld->behind != nullptr) currentOld->behind = current1b;
+				currentOld->next = current1n;
+				currentOld->behind = current1b;
 			}
 			if (i == position1 + 1) {
-				if (currentOld->behind != nullptr) currentOld->behind = current2_b;
+				currentOld->behind = current2_b;
 			}
 			if (i == position2 - 1) {
-				if (currentOld->next != nullptr) currentOld->next = current1_n;
+				currentOld->next = current1_n;
+			}
+			else if ((position2 == 1) && (!check2)) {
+				currentOld = current1_n;
+				check1 = true;
 			}
 			if (i == position2) {
-				if (currentOld->next != nullptr) currentOld->next = current2n;
-				if (currentOld->behind != nullptr) currentOld->behind = current2b;
+				currentOld->next = current2n;
+				currentOld->behind = current2b;
 			}
 			if (i == position2 + 1) {
-				if (currentOld->behind != nullptr) currentOld->behind = current1_b;
-			}
-			//print();
+				currentOld->behind = current1_b;
+			}/*
+			if ((i == listsize) && ((position1 == 1) || (position2 == 1))) {
+				while (currentOld->behind != nullptr) {
+					currentOld = currentOld->behind;
+				}
+				front = currentOld;
+			}*/
 			i++;
 			currentOld = currentOld->next;
 		}
-		cout << endl;
 		/* //колхоз
 		int current1{}, current2{};
 		while (currentOld != nullptr) {
@@ -226,7 +239,7 @@ public:
 		}
 		Node* current{ get_front() };
 		Node* currentDel{ nullptr };
-		while (current->next != nullptr){
+		while (current != nullptr){
 			currentDel = current->next;
 			delete current;	
 			current = currentDel;
