@@ -1,4 +1,4 @@
-﻿#include <iostream>
+#include <iostream>
 #include <cstdio>
 
 using namespace std;
@@ -11,15 +11,15 @@ public:
 	};
 
 private:
-	//длина 
+	//����� 
 	int listsize{};
 
 	Node* front{ nullptr };
 	Node* back{ nullptr };
 
-	//число справа
+	//����� ������
 	Node* get_front() { return front; };
-	//число слева
+	//����� �����
 	Node* get_back() {
 		Node* current{ get_front() };
 		while (current->next != nullptr) {
@@ -35,7 +35,7 @@ public:
 		clear();
 	}
 
-	//вставка числа вправо
+	//������� ����� ������
 	Node* push_front(int data) {
 		Node* current = new Node;
 		current->value = data;
@@ -49,7 +49,7 @@ public:
 		return current;
 	}
 
-	//вставка числа влево
+	//������� ����� �����
 	Node* push_back(int data) {
 		Node* current = new Node;
 		get_back();
@@ -62,7 +62,7 @@ public:
 	}
 	
 
-	//вставка в определенную позицию 
+	//������� � ������������ ������� 
 	Node* inst_in_pos(int position, int data) {
 		if (position == 1) {
 			return push_front(data);
@@ -95,85 +95,112 @@ public:
 		return current;
 	}
 
-	//менять 2 элемента в заданной позиции
+	//������ 2 �������� � ������� ������
 	Node* swap_pos(int position1, int position2) {
-		if ((position1 >= listsize) || (position2 >= listsize) || (position1 < 1) || (position2 < 1)) { 
+		if ((position1 > listsize) || (position2 > listsize) || (position1 < 1) || (position2 < 1)) {
 			cout << "NOT CORRECT POS!!!" << endl;
 			return front;
 		}
-		Node* currentOld{ get_front() };	// Текущий елемент
-		int i{ 1 };							
-		Node* current1n = { nullptr };		// element1 next		
-		Node* current1b = { nullptr };		// element1 back
-		Node* current1_n = { nullptr };		// element1
-		Node* current2n = { nullptr };		// element2 next		
-		Node* current2b = { nullptr };		// element2 back
-		Node* current2_n = { nullptr };		// element2
+		Node* currentOld{ get_front() };
+		int i{ 1 };
+		Node* current1n = new Node;
+		Node* current1b = new Node;
+		Node* current1_n = new Node;
+		Node* current1_b = new Node;
+		Node* current2n = new Node;
+		Node* current2b = new Node;
+		Node* current2_n = new Node;
+		Node* current2_b = new Node;
 
-		while (currentOld != nullptr) {		// зы можно писать просто currentOld, ибо nullptr == false
+		while (currentOld != nullptr) {
 			if (i == position1) {
 				current1_n = currentOld;
 				current1n = currentOld->next;
 				current1b = currentOld->behind;
+				if (currentOld->next != nullptr) current1_b = currentOld->next->behind;
 			}
 			if (i == position2) {
 				current2_n = currentOld;
 				current2n = currentOld->next;
 				current2b = currentOld->behind;
+				if (currentOld->next != nullptr) current2_b = currentOld->next->behind;
 			}
 			i++;
 			currentOld = currentOld->next;
 		}
 		currentOld = get_front();
-		if (front == current1_n) front = current2_n;
-		else if (front == current2_n) front = current1_n;
 		i = 1;
-
-		bool goToNext{};		// если мы уже перешли к следующему, то ещё раз не переходим
+		bool check1{}, check2{};
 		while (currentOld != nullptr) {
-			goToNext = false;
 			if (i == position1 - 1) {
-				currentOld->next = current2_n;		// Если встали на предыдущий от pos1, то меняем его указатель и, так как теперь она указывает\
-														на pos2, то переходим к следующей ячейке вручную
-				currentOld = current1_n;
-				goToNext = true;
+				currentOld->next = current2_n;
 			}
-			else if (i == position1) {
-				currentOld->behind = current2b;		// Та же логика
-				currentOld->next = current2n;
-				currentOld = current1n;
-				goToNext = true;
+			else if ((position1 == 1) && (!check1)) {
+				currentOld = current2_n;
+				check1 = true;
 			}
-			else if (i == position1 + 1) {
-				currentOld->behind = current2_n;
+			if (i == position1) {
+				currentOld->next = current1n;
+				currentOld->behind = current1b;
+			}
+			if (i == position1 + 1) {
+				currentOld->behind = current2_b;
 			}
 			if (i == position2 - 1) {
 				currentOld->next = current1_n;
-				currentOld = current2_n;
-				goToNext = true;
 			}
-			else if (i == position2) {
-				currentOld->behind = current1b;
-				currentOld->next = current1n;
-				currentOld = current2n;
-				goToNext = true;
+			else if ((position2 == 1) && (!check2)) {
+				currentOld = current1_n;
+				check1 = true;
 			}
-			else if (i == position2 + 1) {
-				currentOld->behind = current1_n;
+			if (i == position2) {
+				currentOld->next = current2n;
+				currentOld->behind = current2b;
 			}
-
-			if (!goToNext) currentOld = currentOld->next;
-			++i;
+			if (i == position2 + 1) {
+				currentOld->behind = current1_b;
+			}/*
+			if ((i == listsize) && ((position1 == 1) || (position2 == 1))) {
+				while (currentOld->behind != nullptr) {
+					currentOld = currentOld->behind;
+				}
+				front = currentOld;
+			}*/
+			i++;
+			currentOld = currentOld->next;
 		}
-		if (current1_n->next == current1_n) current1_n->next = current2_n;			// Если соседние, то элемент ссылается после замены сам на себя, хотя должен ссылаться на другой
-		if (current2_n->next == current2_n) current2_n->next = current1_n;
-		if (current2_n->behind == current2_n) current2_n->behind = current1_n;
-		if (current1_n->behind == current1_n) current1_n->behind = current2_n;
-
+		/* //������
+		int current1{}, current2{};
+		while (currentOld != nullptr) {
+			if (i == position1) {
+				current1 = currentOld->value;
+			}
+			if (i == position2) {
+				current2 = currentOld->value;
+			}
+			i++;
+			currentOld = currentOld->next;
+		}
+		i = 1;
+		currentOld = get_front();
+		while (currentOld != nullptr) {
+			if (i == position1) {
+				currentOld->value = current2;
+				if (currentOld->behind != nullptr) currentOld->behind->next = currentOld;
+				if (currentOld->next != nullptr) currentOld->next->behind = currentOld;
+			}
+			if (i == position2) {
+				currentOld->value = current1;
+				if (currentOld->behind != nullptr) currentOld->behind->next = currentOld;
+				if (currentOld->next != nullptr) currentOld->next->behind = currentOld;
+			}
+			i++;
+			currentOld = currentOld->next;
+		}*/
 		return currentOld;
 	}
 
-	//удаление начала и конца
+	//�������� ������ � �����
 	void del_front_and_back() {
 		if (!listsize) {
 			cout << "ERROR: DELETE FRONT AND BACK!!!" << endl;
@@ -204,7 +231,7 @@ public:
 		print();
 	}
 
-	//удаление всего 
+	//�������� ����� 
 	void clear() { 
 		if (!listsize) {
 			cout << "All clear" << endl;
@@ -223,7 +250,7 @@ public:
 		cout << "All clear" << endl;
 	}
 
-	//вывод
+	//�����
 	void print() {
 		for (Node* current{ get_front() }; current != nullptr; current = current->next) {
 			cout << current->value << "  " << current->next << "  " << current->behind << endl;
@@ -249,20 +276,20 @@ int main() {
 	list.push_back(7);
 	list.print();
 	
-	/*int position{}, number{};
-	cout << "Введите номер ячейки вкоторую хотите вставить число: ";
+	int position{}, number{};
+	cout << "������� ����� ������ �������� ������ �������� �����: ";
 	cin >> position;
-	cout << endl << "это число: ";
+	cout << endl << "��� �����: ";
 	cin >> number;
 	cout << endl;
-	list.inst_in_pos(position, number);*/
+	list.inst_in_pos(position, number);
 
-	//list.print();
+	list.print();
 
 	int position1{}, position2{};
-	cout << "выберите позицию 1: ";
+	cout << "�������� ������� 1: ";
 	cin >> position1;
-	cout << endl << "позицию 2: ";
+	cout << endl << "������� 2: ";
 	cin >> position2;
 	cout << endl;
 	list.swap_pos(position1, position2);
