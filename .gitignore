@@ -35,3 +35,9 @@
 *.db
 *.ipch
 *.sudo
+*.suo
+*.tlog
+*.log
+*.pdb
+*.ilk
+*.lastbuildstate
