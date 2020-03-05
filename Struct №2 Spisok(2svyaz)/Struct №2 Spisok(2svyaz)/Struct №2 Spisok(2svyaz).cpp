@@ -11,8 +11,6 @@ public:
 	};
 
 private:
-	//длина 
-	int listsize{};
 
 	Node* front{ nullptr };
 	Node* back{ nullptr };
@@ -34,6 +32,8 @@ public:
 	~List() {
 		clear();
 	}
+	//длина 
+	int listsize{};
 
 	//вставка числа вправо
 	Node* push_front(int data) {
@@ -104,6 +104,7 @@ public:
 		if (position1 == position2){
 			return front;
 		}
+		cout << position1 << "  " << position2 << endl;
 		Node* currentOld{ get_front() };	
 		int i{ 1 };							
 		Node* current1n = { nullptr };		
@@ -236,7 +237,7 @@ public:
 int main() {
 	system("chcp 1251"); system("cls");
 	List list;
-	list.clear();
+	list.clear();/*
 	list.print();
 	list.push_front(5);
 	list.print();
@@ -251,14 +252,6 @@ int main() {
 	list.push_back(7);
 	list.print();
 	
-	int position{}, number{};
-	cout << "Введите номер ячейки вкоторую хотите вставить число: ";
-	cin >> position;
-	cout << endl << "это число: ";
-	cin >> number;
-	cout << endl;
-	list.inst_in_pos(position, number);
-
 	list.print();
 
 	int position1{}, position2{};
@@ -269,7 +262,32 @@ int main() {
 	cout << endl;
 	list.swap_pos(position1, position2);
 	
+	list.print();*/
+	for (int i = 0; i < 15; i++) {
+		list.push_front(i);
+	}
+
+	int position{}, number{};
+	cout << "Введите номер ячейки вкоторую хотите вставить число: ";
+	cin >> position;
+	cout << endl << "это число: ";
+	cin >> number;
+	cout << endl;
+	list.inst_in_pos(position, number);
 	list.print();
+
+
+	list.swap_pos(1,list.listsize);// 1 and N
+	list.print();
+	list.swap_pos(4, 5);// i and i+1
+	list.print();
+	list.swap_pos(7, 10);// i and i+3
+	list.print();
+	list.swap_pos(1, int(list.listsize / 2));// 1 and N/2
+	list.print();
+	list.swap_pos(int(list.listsize / 2), list.listsize);// N/2 and N
+	list.print();
+
 	list.clear();
 	system("pause");
 	return 0;
