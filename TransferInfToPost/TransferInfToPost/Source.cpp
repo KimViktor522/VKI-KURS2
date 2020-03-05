@@ -69,6 +69,7 @@ public:
 		Node* current{ front };
 		return current->valne;
 	}
+	//проверка на пустату стека
 	bool empty() {
 		if (!stacksize)	return false;
 		else return true;
