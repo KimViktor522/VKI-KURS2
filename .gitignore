@@ -37,7 +37,7 @@
 *.sudo
 *.suo
 
-# logi
+# logs
 *.tlog
 *.log
 *.pdb

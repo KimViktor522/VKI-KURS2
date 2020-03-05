@@ -251,15 +251,15 @@ int main() {
 	list.push_back(7);
 	list.print();
 	
-	/*int position{}, number{};
+	int position{}, number{};
 	cout << "Введите номер ячейки вкоторую хотите вставить число: ";
 	cin >> position;
 	cout << endl << "это число: ";
 	cin >> number;
 	cout << endl;
-	list.inst_in_pos(position, number);*/
+	list.inst_in_pos(position, number);
 
-	//list.print();
+	list.print();
 
 	int position1{}, position2{};
 	cout << "выберите позицию 1: ";
