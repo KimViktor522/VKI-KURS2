@@ -13,13 +13,13 @@ public:
 		Node* next;
 	};
 private:	 
-	int stacksize{};//длина
+	int stacksize{};//РґР»РёРЅР°
 	Node* front = { nullptr };
 public:
 	~Stack(){
 		clear();
 	}
-	//добавляет элемент в начало 
+	//РґРѕР±Р°РІР»СЏРµС‚ СЌР»РµРјРµРЅС‚ РІ РЅР°С‡Р°Р»Рѕ 
 	Node* push_front(T data) {
 		Node* current = new Node;
 		current->valne = data;
@@ -28,7 +28,7 @@ public:
 		++stacksize;
 		return current;
 	}
-	//удаляет элемент из начала
+	//СѓРґР°Р»СЏРµС‚ СЌР»РµРјРµРЅС‚ РёР· РЅР°С‡Р°Р»Р°
 	Node* del_front() {
 		if (!stacksize) {
 			cout << "All clear" << endl;
@@ -43,7 +43,7 @@ public:
 		--stacksize;
 		return current;
 	}
-	//полностью очищает стек
+	//РїРѕР»РЅРѕСЃС‚СЊСЋ РѕС‡РёС‰Р°РµС‚ СЃС‚РµРє
 	void clear() {
 		if (!stacksize) {
 			cout << "All clear" << endl;
@@ -60,7 +60,7 @@ public:
 		stacksize = 0;
 		cout << "All clear" << endl;
 	}
-	//возвращает первый элемент
+	//РІРѕР·РІСЂР°С‰Р°РµС‚ РїРµСЂРІС‹Р№ СЌР»РµРјРµРЅС‚
 	int look_front() {
 		if (!stacksize) {
 			cout << "Empty" << endl;
@@ -73,7 +73,7 @@ public:
 		if (!stacksize)	return false;
 		else return true;
 	}
-	//выводит весь стек
+	//РІС‹РІРѕРґРёС‚ РІРµСЃСЊ СЃС‚РµРє
 	void print() {
 		for (Node* current{ front }; current != nullptr; current = current->next) {
 			cout << current->valne << "  ";
@@ -82,11 +82,11 @@ public:
 	}
 };
 
-//проверка коректности инфиксной строки
+//РїСЂРѕРІРµСЂРєР° РєРѕСЂРµРєС‚РЅРѕСЃС‚Рё РёРЅС„РёРєСЃРЅРѕР№ СЃС‚СЂРѕРєРё
 bool validCheck_Str(string input) {
-	bool checkBracket{}/*проверка неправельных скобочек*/, checkActions{}/*проверка на два подряд действия*/,
-		checkEequally{}/*проверка на неслько равно(=)*/, checkVariable{}/*проверка на повтор переменных*/,
-		checkBracket_And_Actions{}/*проверка на действие рядом со скобкой*/;
+	bool checkBracket{}/*РїСЂРѕРІРµСЂРєР° РЅРµРїСЂР°РІРµР»СЊРЅС‹С… СЃРєРѕР±РѕС‡РµРє*/, checkActions{}/*РїСЂРѕРІРµСЂРєР° РЅР° РґРІР° РїРѕРґСЂСЏРґ РґРµР№СЃС‚РІРёСЏ*/,
+		checkEequally{}/*РїСЂРѕРІРµСЂРєР° РЅР° РЅРµСЃР»СЊРєРѕ СЂР°РІРЅРѕ(=)*/, checkVariable{}/*РїСЂРѕРІРµСЂРєР° РЅР° РїРѕРІС‚РѕСЂ РїРµСЂРµРјРµРЅРЅС‹С…*/,
+		checkBracket_And_Actions{}/*РїСЂРѕРІРµСЂРєР° РЅР° РґРµР№СЃС‚РІРёРµ СЂСЏРґРѕРј СЃРѕ СЃРєРѕР±РєРѕР№*/;
 	for (int i{}; i < input.length(); ++i) {
 		if (input[i] == '(') {
 			checkBracket = true;
@@ -95,28 +95,28 @@ bool validCheck_Str(string input) {
 		else checkBracket_And_Actions = false;
 		if (input[i] == ')') checkBracket = false;
 		if ((input[i] == '+') || (input[i] == '-') || (input[i] == '*') || (input[i] == '/')) {
-			if (checkActions) return false;		//при повторенеи рядом знаков (/*-+) 
+			if (checkActions) return false;		//РїСЂРё РїРѕРІС‚РѕСЂРµРЅРµРё СЂСЏРґРѕРј Р·РЅР°РєРѕРІ (/*-+) 
 			checkActions = true;
 		}
 		else checkActions = false;
 		if (input[i] == '=') {
-			if (checkEequally) return false;	//при повторе знака (=)
+			if (checkEequally) return false;	//РїСЂРё РїРѕРІС‚РѕСЂРµ Р·РЅР°РєР° (=)
 			checkEequally = true;
 		}
-		if ((input[i] != '(') || (input[i] != ')') || (input[i] != '+') || (input[i] != '-') || (input[i] != '*') || (input[i] != '/')) {//проверка на переменную
-			if (checkVariable) return false;	//при повторение рядом переменных
+		if ((input[i] != '(') || (input[i] != ')') || (input[i] != '+') || (input[i] != '-') || (input[i] != '*') || (input[i] != '/')) {//РїСЂРѕРІРµСЂРєР° РЅР° РїРµСЂРµРјРµРЅРЅСѓСЋ
+			if (checkVariable) return false;	//РїСЂРё РїРѕРІС‚РѕСЂРµРЅРёРµ СЂСЏРґРѕРј РїРµСЂРµРјРµРЅРЅС‹С…
 			checkVariable = true;
 		}
 		if ((checkBracket) && (input[i] == '='))
-			return false;						//при открытых скобоках знак (=)
+			return false;						//РїСЂРё РѕС‚РєСЂС‹С‚С‹С… СЃРєРѕР±РѕРєР°С… Р·РЅР°Рє (=)
 		if ((checkBracket_And_Actions) && ((input[i] == '+') || (input[i] == '=') || (input[i] == '*') || (input[i] == '/')))
-			return false;						//при действие (+*/=) рядом со знаком (()
+			return false;						//РїСЂРё РґРµР№СЃС‚РІРёРµ (+*/=) СЂСЏРґРѕРј СЃРѕ Р·РЅР°РєРѕРј (()
 	}
-	if (checkBracket) return false;				//при нарушенеи порядка (())
+	if (checkBracket) return false;				//РїСЂРё РЅР°СЂСѓС€РµРЅРµРё РїРѕСЂСЏРґРєР° (())
 	else return true;
 }
 
-//перевод из инфиксной в постфиксную
+//РїРµСЂРµРІРѕРґ РёР· РёРЅС„РёРєСЃРЅРѕР№ РІ РїРѕСЃС‚С„РёРєСЃРЅСѓСЋ
 string tranferInfToPost(string input,Stack<char> stack) {
 	string output{};
 	for (int i{}; i < input.length(); ++i) {
@@ -139,7 +139,7 @@ string tranferInfToPost(string input,Stack<char> stack) {
 int main() {
 	system("chcp 1251"); system("cls");
 	string input{}, output{};
-	cout << "Введите строку в инфиксном виде: ";
+	cout << "Р’РІРµРґРёС‚Рµ СЃС‚СЂРѕРєСѓ РІ РёРЅС„РёРєСЃРЅРѕРј РІРёРґРµ: ";
 	cin >> input; 
 	input = "a+(f-b*c/(2-x)+y)/(a*r-k)";
 	cout << endl;
