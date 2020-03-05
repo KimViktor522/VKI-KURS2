@@ -86,7 +86,7 @@ public:
 //проверка коректности инфиксной строки
 bool validCheck_Str(string input) {
 	bool checkBracket{}/*проверка неправельных скобочек*/, checkActions{}/*проверка на два подряд действия*/,
-		checkEequally{}/*проверка на неслько равно(=)*/, checkVariable{}/*проверка на повтор переменных*/,
+		checkEequally{}/*проверка на несколько равно(=)*/, checkVariable{}/*проверка на повтор переменных*/,
 		checkBracket_And_Actions{}/*проверка на действие рядом со скобкой*/;
 	for (int i{}; i < input.length(); ++i) {
 		if (input[i] == '(') {
