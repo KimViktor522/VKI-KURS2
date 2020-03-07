@@ -81,30 +81,54 @@ public:
 		}
 		cout << "\n";
 	}
-};
+}; 
+
+bool isbracket(char input) {
+	if ((input == '(') || (input == ')')) return true;
+	else return false;
+}
+
+bool isoperatr(char input) {
+	if ((input >= '(') || (input >= ')') || (input >= '+') || (input >= '-') || (input >= '*') || (input >= '/') || (input >= '=')) return true;
+	else return false;
+}
+
+bool isactions_and_equally(char input) {
+	if ((input >= '+') || (input >= '-') || (input >= '*') || (input >= '/') || (input >= '=')) return true;
+	else return false;
+}
+
+bool isactions(char input) {
+	if ((input >= '+') || (input >= '-') || (input >= '*') || (input >= '/')) return true;
+	else return false;
+}
 
 //проверка коректности инфиксной строки
 bool validCheck_Str(string input) {
 	bool checkBracket{}/*проверка неправельных скобочек*/, checkActions{}/*проверка на два подряд действия*/,
-		checkEequally{}/*проверка на несколько равно(=)*/, checkVariable{}/*проверка на повтор переменных*/,
+		checkEqually{}/*проверка на несколько равно(=)*/, checkVariable{}/*проверка на повтор переменных*/,
 		checkBracket_And_Actions{}/*проверка на действие рядом со скобкой*/;
 	for (int i{}; i < input.length(); ++i) {
+		if (isalnum(input[i]) || isoperatr(input[i])) 
+			return false;						//при не правильном вводе
+		if (input.empty()) return false;		//при пустой строке
+		if (input[i] == ' ') return false;		//при нахождение пробела
 		if (input[i] == '(') {
 			checkBracket = true;
 			checkBracket_And_Actions = true;
 		}
 		else checkBracket_And_Actions = false;
 		if (input[i] == ')') checkBracket = false;
-		if ((input[i] == '+') || (input[i] == '-') || (input[i] == '*') || (input[i] == '/')) {
+		if (isactions(input[i])) {
 			if (checkActions) return false;		//при повторенеи рядом знаков (/*-+) 
 			checkActions = true;
 		}
 		else checkActions = false;
 		if (input[i] == '=') {
-			if (checkEequally) return false;	//при повторе знака (=)
-			checkEequally = true;
+			if (checkEqually) return false;		//при повторе знака (=)
+			checkEqually = true;
 		}
-		if ((input[i] != '(') || (input[i] != ')') || (input[i] != '+') || (input[i] != '-') || (input[i] != '*') || (input[i] != '/')) {//проверка на переменную
+		if (isbracket(input[i]) || isactions(input[i])) {//проверка на переменную
 			if (checkVariable) return false;	//при повторение рядом переменных
 			checkVariable = true;
 		}
@@ -112,6 +136,8 @@ bool validCheck_Str(string input) {
 			return false;						//при открытых скобоках знак (=)
 		if ((checkBracket_And_Actions) && ((input[i] == '+') || (input[i] == '=') || (input[i] == '*') || (input[i] == '/')))
 			return false;						//при действие (+*/=) рядом со знаком (()
+		if ((i == input.length - 1) && isactions_and_equally(input[i])) 
+			return false;						//при действии в конце
 	}
 	if (checkBracket) return false;				//при нарушенеи порядка (())
 	else return true;
