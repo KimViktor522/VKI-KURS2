@@ -89,17 +89,17 @@ bool isbracket(char input) {
 }
 
 bool isoperatr(char input) {
-	if ((input >= '(') || (input >= ')') || (input >= '+') || (input >= '-') || (input >= '*') || (input >= '/') || (input >= '=')) return true;
+	if ((input == '(') || (input == ')') || (input == '+') || (input == '-') || (input == '*') || (input == '/') || (input == '=')) return true;
 	else return false;
 }
 
 bool isactions_and_equally(char input) {
-	if ((input >= '+') || (input >= '-') || (input >= '*') || (input >= '/') || (input >= '=')) return true;
+	if ((input == '+') || (input == '-') || (input == '*') || (input == '/') || (input == '=')) return true;
 	else return false;
 }
 
 bool isactions(char input) {
-	if ((input >= '+') || (input >= '-') || (input >= '*') || (input >= '/')) return true;
+	if ((input == '+') || (input == '-') || (input == '*') || (input == '/')) return true;
 	else return false;
 }
 
@@ -107,39 +107,47 @@ bool isactions(char input) {
 bool validCheck_Str(string input) {
 	bool checkBracket{}/*проверка неправельных скобочек*/, checkActions{}/*проверка на два подряд действия*/,
 		checkEqually{}/*проверка на несколько равно(=)*/, checkVariable{}/*проверка на повтор переменных*/,
-		checkBracket_And_Actions{}/*проверка на действие рядом со скобкой*/;
+		checkBracket_And_Actions{}/*проверка на действие рядом со скобкой*/, 
+		checkEqually_And_Actions{}/*проверка на подряд равно и действия */;
+	int sumBracket{};
 	for (int i{}; i < input.length(); ++i) {
-		if (isalnum(input[i]) || isoperatr(input[i])) 
-			return false;						//при не правильном вводе
-		if (input.empty()) return false;		//при пустой строке
-		if (input[i] == ' ') return false;		//при нахождение пробела
+		if (!isalnum(input[i]) && !isoperatr(input[i])) 
+			return false;								//при вводе некорректного символа
+		if ((checkBracket_And_Actions) && (isactions_and_equally(input[i])) && (input[i] != '-') && (input[i] != '+'))
+			return false;								//при действие (/+*=) рядом со знаком (()
+		if ((checkBracket) && (input[i] == '='))
+			return false;								//при открытых скобоках знак (=)
+		if (input.empty()) return false;				//при пустой строке
 		if (input[i] == '(') {
+			++sumBracket;
 			checkBracket = true;
 			checkBracket_And_Actions = true;
 		}
 		else checkBracket_And_Actions = false;
-		if (input[i] == ')') checkBracket = false;
+		if (input[i] == ')') {
+			--sumBracket;
+			checkBracket = false;
+		}
+		if (input[i] == '=') {
+			if (checkActions) return false;				//при действие перед знака (=) 
+		}
 		if (isactions(input[i])) {
-			if (checkActions) return false;		//при повторенеи рядом знаков (/*-+) 
+			if (checkActions) return false;				//при повторенеи рядом знаков (/*-+) 
+			if(checkEqually_And_Actions) return false;  //при действие после знака (=) 
 			checkActions = true;
 		}
-		else checkActions = false;
+		else checkActions = false; 
 		if (input[i] == '=') {
-			if (checkEqually) return false;		//при повторе знака (=)
+			if (checkEqually) return false;				//при повторе знака (=)
 			checkEqually = true;
+			checkEqually_And_Actions = true;
 		}
-		if (isbracket(input[i]) || isactions(input[i])) {//проверка на переменную
-			if (checkVariable) return false;	//при повторение рядом переменных
-			checkVariable = true;
-		}
-		if ((checkBracket) && (input[i] == '='))
-			return false;						//при открытых скобоках знак (=)
-		if ((checkBracket_And_Actions) && ((input[i] == '+') || (input[i] == '=') || (input[i] == '*') || (input[i] == '/')))
-			return false;						//при действие (+*/=) рядом со знаком (()
-		if ((i == input.length - 1) && isactions_and_equally(input[i])) 
-			return false;						//при действии в конце
+		else checkEqually_And_Actions = false;
+		if ((i == (input.length() - 1)) && (isactions_and_equally(input[i])))
+			return false;								//при действии в конце
+		cout << i << " ";
 	}
-	if (checkBracket) return false;				//при нарушенеи порядка (())
+	if ((checkBracket) || (sumBracket)) return false;	//при нарушенеи порядка скобочек( )
 	else return true;
 }
 
@@ -153,10 +161,9 @@ string tranferInfToPost(string input,Stack<char> stack) {
 		else if (input[i] == ')') {
 
 		}
-		else if (input[i] == '=');
-
+		else if (input[i] == '=') NULL;
 	}
-	while (stack.empty) {
+	while (stack.empty()) {
 		output += stack.look_front();
 		stack.del_front();
 	}
@@ -164,18 +171,18 @@ string tranferInfToPost(string input,Stack<char> stack) {
 }
 
 int main() {
-	system("chcp 1251"); system("cls");
+	/*system("chcp 1251"); */system("chcp 65001"); system("cls");
 	string input{}, output{};
 	cout << "Введите строку в инфиксном виде: ";
 	cin >> input; 
 	input = "a+(f-b*c/(2-x)+y)/(a*r-k)";
-	cout << endl;
+	cout << endl << input << endl;
 	if (validCheck_Str(input)) {
 		Stack<char> stack;
 		output = tranferInfToPost(input, stack);
 		cout << output;
 	}
-	else cout << "NOT CORRECT INPUT!!!";
+	else cout << endl << "NOT CORRECT INPUT!!!";
 	system("pause");
 	return 0;
 }
