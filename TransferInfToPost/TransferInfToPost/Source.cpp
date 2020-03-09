@@ -9,7 +9,8 @@ class Stack {
 public:
 	class Node{
 	public:
-		T valne{};
+		int priority{};
+		T value{};
 		Node* next;
 	};
 private:	 
@@ -20,9 +21,10 @@ public:
 		clear();
 	}
 	//добавляет элемент в начало 
-	Node* push_front(T data) {
+	Node* push_front(T data, int num) {
 		Node* current = new Node;
-		current->valne = data;
+		current->value = data;
+		current->priority = num;
 		current->next = front;
 		front = current;
 		++stacksize;
@@ -31,7 +33,7 @@ public:
 	//удаляет элемент из начала
 	Node* del_front() {
 		if (!stacksize) {
-			cout << "All clear" << endl;
+			//cout << "All clear" << endl;
 			return front;
 		}
 		Node* current{ front };
@@ -46,7 +48,7 @@ public:
 	//полностью очищает стек
 	void clear() {
 		if (!stacksize) {
-			cout << "All clear" << endl;
+			//cout << "All clear" << endl;
 			return;
 		}
 		Node* current{ front };
@@ -58,16 +60,24 @@ public:
 		}
 		front = nullptr;
 		stacksize = 0;
-		cout << "All clear" << endl;
+		//cout << "All clear" << endl;
 	}
 	//возвращает первый элемент
-	int look_front() {
+	T look_front_value() {
 		if (!stacksize) {
-			cout << "Empty" << endl;
+			//cout << "Empty" << endl;
 			return 0;
 		}
 		Node* current{ front };
-		return current->valne;
+		return current->value;
+	}
+	int look_front_priority() {
+		if (!stacksize) {
+			//cout << "Empty" << endl;
+			return 0;
+		}
+		Node* current{ front };
+		return current->priority;
 	}
 	//проверка на пустату стека
 	bool empty() {
@@ -77,7 +87,7 @@ public:
 	//выводит весь стек
 	void print() {
 		for (Node* current{ front }; current != nullptr; current = current->next) {
-			cout << current->valne << "  ";
+			cout << current->value << "  ";
 		}
 		cout << "\n";
 	}
@@ -114,9 +124,9 @@ bool validCheck_Str(string input) {
 		if (!isalnum(input[i]) && !isoperatr(input[i])) 
 			return false;								//при вводе некорректного символа
 		if ((checkBracket_And_Actions) && (isactions_and_equally(input[i])) && (input[i] != '-') && (input[i] != '+'))
-			return false;								//при действие (/+*=) рядом со знаком (()
+			return false;								//при действие '/*=+' рядом со знаком '('
 		if ((checkBracket) && (input[i] == '='))
-			return false;								//при открытых скобоках знак (=)
+			return false;								//при открытых скобоках знак '='
 		if (input.empty()) return false;				//при пустой строке
 		if (input[i] == '(') {
 			++sumBracket;
@@ -129,42 +139,74 @@ bool validCheck_Str(string input) {
 			checkBracket = false;
 		}
 		if (input[i] == '=') {
-			if (checkActions) return false;				//при действие перед знака (=) 
+			if (checkActions) return false;				//при действие перед знака '='
 		}
 		if (isactions(input[i])) {
-			if (checkActions) return false;				//при повторенеи рядом знаков (/*-+) 
-			if(checkEqually_And_Actions) return false;  //при действие после знака (=) 
+			if (checkActions) return false;				//при повторенеи рядом знаков '/*-+'
+			if(checkEqually_And_Actions) return false;  //при действие после знака '='
 			checkActions = true;
 		}
 		else checkActions = false; 
 		if (input[i] == '=') {
-			if (checkEqually) return false;				//при повторе знака (=)
+			if (checkEqually) return false;				//при повторе знака '='
 			checkEqually = true;
 			checkEqually_And_Actions = true;
 		}
 		else checkEqually_And_Actions = false;
 		if ((i == (input.length() - 1)) && (isactions_and_equally(input[i])))
 			return false;								//при действии в конце
-		cout << i << " ";
+		//cout << i << " ";
 	}
-	if ((checkBracket) || (sumBracket)) return false;	//при нарушенеи порядка скобочек( )
+	if ((checkBracket) || (sumBracket)) return false;	//при нарушенеи порядка скобочек '( )'
 	else return true;
 }
 
 //перевод из инфиксной в постфиксную
-string tranferInfToPost(string input,Stack<char> stack) {
+string tranferInfToPost(string input) {
 	string output{};
+	Stack<char> stack;
+	//int priorityOper{};
 	for (int i{}; i < input.length(); ++i) {
-		if (input[i] == '(') {
-
+		if (!isoperatr(input[i])) {
+			output += input[i];
+		}
+		else if (input[i] == '(') {
+			stack.push_front(input[i], 1);
 		}
 		else if (input[i] == ')') {
-
+			while (stack.look_front_priority() > 1) {	//удаляем из стека пока не встретим приоритет 1 '('
+				output += stack.look_front_value();
+				stack.del_front();
+			}
+			stack.del_front();							//удалить из стека приоритет 1 '('
 		}
-		else if (input[i] == '=') NULL;
+		else if (isactions_and_equally(input[i])) {		//если встретелись знаки '=/*-+'
+			if (input[i] == '=') {
+				while (stack.look_front_priority() >= 3) {	
+					output += stack.look_front_value();
+					stack.del_front();
+				}
+				stack.push_front(input[i], 3);
+			}
+			else if ((input[i] == '+') || (input[i] == '-')) {
+				while (stack.look_front_priority() >= 4) {
+					output += stack.look_front_value();
+					stack.del_front();
+				}
+				stack.push_front(input[i], 4);
+			}
+			else if ((input[i] == '*') || (input[i] == '/')) {
+				while (stack.look_front_priority() >= 5) {
+					output += stack.look_front_value();
+					stack.del_front();
+				}
+				stack.push_front(input[i], 5);
+			}
+		}
+		//if (!stack.empty()) cout << endl; stack.print(); cout << endl;  //вывод стека для проверки 
 	}
 	while (stack.empty()) {
-		output += stack.look_front();
+		output += stack.look_front_value();
 		stack.del_front();
 	}
 	return output;
@@ -175,14 +217,14 @@ int main() {
 	string input{}, output{};
 	cout << "Введите строку в инфиксном виде: ";
 	cin >> input; 
-	input = "a+(f-b*c/(2-x)+y)/(a*r-k)";
+	//input = "(a)+(f-b*c/(2-x)+y)/(a*r-k)";
+	input = "(5+-4)(3-2.5)";
 	cout << endl << input << endl;
 	if (validCheck_Str(input)) {
-		Stack<char> stack;
-		output = tranferInfToPost(input, stack);
-		cout << output;
+		output = tranferInfToPost(input);
+		cout << endl << "строка в постфиксном виде: " << output << endl << endl;
 	}
-	else cout << endl << "NOT CORRECT INPUT!!!";
+	else cout << endl << "NOT CORRECT INPUT!!!" << endl << endl;
 	system("pause");
 	return 0;
 }
