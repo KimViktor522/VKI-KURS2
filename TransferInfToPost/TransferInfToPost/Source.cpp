@@ -114,17 +114,25 @@ bool isactions(char input) {
 }
 
 //проверка коректности инфиксной строки
-bool validCheck_Str(string input) {
+bool validInfix_Str(string input) {
 	bool checkBracket{}/*проверка неправельных скобочек*/, checkActions{}/*проверка на два подряд действия*/,
 		checkEqually{}/*проверка на несколько равно(=)*/, checkVariable{}/*проверка на повтор переменных*/,
 		checkBracket_And_Actions{}/*проверка на действие рядом со скобкой*/, 
-		checkEqually_And_Actions{}/*проверка на подряд равно и действия */;
+		checkEqually_And_Actions{}/*проверка на подряд равно и действия */,
+		checkPoint{}/*проверка на две точки в одном числе*/;
 	int sumBracket{};
 	for (int i{}; i < input.length(); ++i) {
-		if (!isalnum(input[i]) && !isoperatr(input[i])) 
+		if (!isalnum(input[i]) && !isoperatr(input[i]) && input[i] != '.')
 			return false;								//при вводе некорректного символа
+		if ((input[i] == '.') && (!((i - 1) >= 0) || !(isdigit(input[i - 1])) || !((i + 1) < input.length()) || !(isdigit(input[i + 1])) || (checkPoint))) {
+			return false;								//при неправельном дробном числе 
+		}
+		if (isdigit(input[i]) && input[i + 1] == '(')
+			return false;								//при цифре перед '('
+		if (input[i] == '.') checkPoint = true;
+		if (isactions_and_equally(input[i])) checkPoint = false;
 		if ((checkBracket_And_Actions) && (isactions_and_equally(input[i])) && (input[i] != '-') && (input[i] != '+'))
-			return false;								//при действие '/*=+' рядом со знаком '('
+			return false;								//при действие '/*=+' после знака '('
 		if ((checkBracket) && (input[i] == '='))
 			return false;								//при открытых скобоках знак '='
 		if (input.empty()) return false;				//при пустой строке
@@ -143,7 +151,8 @@ bool validCheck_Str(string input) {
 		}
 		if (isactions(input[i])) {
 			if (checkActions) return false;				//при повторенеи рядом знаков '/*-+'
-			if(checkEqually_And_Actions) return false;  //при действие после знака '='
+			if ((checkEqually_And_Actions) && (input[i] != '-'))
+				return false;  //при действие после знака '='
 			checkActions = true;
 		}
 		else checkActions = false; 
@@ -161,20 +170,36 @@ bool validCheck_Str(string input) {
 	else return true;
 }
 
+string upgradeInfix(string input) {
+	for (int i{}; i < input.length(); ++i) {
+		if (input[i] == ',') input[i] = '.';
+		if (isdigit(input[i]) && input[i + 1] == '('){
+			input.insert(++i,"*");
+		}
+		if (input[i] == ')' && input[i + 1] == '(') {
+			input.insert(++i, "*");
+		}
+	}
+	return input;
+}
+
 //перевод из инфиксной в постфиксную
 string tranferInfToPost(string input) {
 	string output{};
 	Stack<char> stack;
-	//int priorityOper{};
 	for (int i{}; i < input.length(); ++i) {
+		if ((input[i] != '.') && !(isbracket(input[i])) && !(isdigit(input[i]))){
+			output += ' ';
+		}
 		if (!isoperatr(input[i])) {
-			output += input[i];
+			output += input[i]; 
 		}
 		else if (input[i] == '(') {
 			stack.push_front(input[i], 1);
 		}
 		else if (input[i] == ')') {
 			while (stack.look_front_priority() > 1) {	//удаляем из стека пока не встретим приоритет 1 '('
+				output += ' ';
 				output += stack.look_front_value();
 				stack.del_front();
 			}
@@ -184,6 +209,7 @@ string tranferInfToPost(string input) {
 			if (input[i] == '=') {
 				while (stack.look_front_priority() >= 3) {	
 					output += stack.look_front_value();
+					if ((input[i + 1] != '-') && (input[i + 1] != '(')) output += ' ';
 					stack.del_front();
 				}
 				stack.push_front(input[i], 3);
@@ -191,6 +217,7 @@ string tranferInfToPost(string input) {
 			else if ((input[i] == '+') || (input[i] == '-')) {
 				while (stack.look_front_priority() >= 4) {
 					output += stack.look_front_value();
+					output += ' ';
 					stack.del_front();
 				}
 				stack.push_front(input[i], 4);
@@ -198,6 +225,7 @@ string tranferInfToPost(string input) {
 			else if ((input[i] == '*') || (input[i] == '/')) {
 				while (stack.look_front_priority() >= 5) {
 					output += stack.look_front_value();
+					output += ' ';
 					stack.del_front();
 				}
 				stack.push_front(input[i], 5);
@@ -205,24 +233,82 @@ string tranferInfToPost(string input) {
 		}
 		//if (!stack.empty()) cout << endl; stack.print(); cout << endl;  //вывод стека для проверки 
 	}
+	output += ' ';
 	while (stack.empty()) {
 		output += stack.look_front_value();
+		output += ' ';
 		stack.del_front();
 	}
 	return output;
 }
 
+//проверка коректности постфиксной строки
+bool validPostfix_Str(string input) {
+	for (int i{}; i < input.length(); ++i) {
+		if (!isdigit(input[i]) && !isoperatr(input[i]) && (input[i] != '.') && (input[i] != ' ') && (input[i] != '='))
+			return false;								//при вводе некорректного символа
+	}
+	return true;
+}
+
+//перевод из инфиксной в постфиксную
+double tranferPostToNum(string input) {
+	string tranferStrToDoub{};
+	Stack<double> stack;
+	//if (!isdigit(input[i]) && !isoperatr(input[i]) && (input[i] != '.') && (input[i] != ' '))
+	for (int i{}; i < input.length(); ++i) {
+		if (isdigit(input[i])) {
+			while (input[i] != ' ') {
+				tranferStrToDoub += input[i];
+				++i;
+			}
+			stack.push_front(stod(tranferStrToDoub), 0);
+			tranferStrToDoub.clear();
+		}
+		if (isactions(input[i])) {
+			double current1{};
+			current1 = stack.look_front_value();
+			stack.del_front();
+			if (input[i] == '+') {
+				current1 += stack.look_front_value();
+			}
+			else if (input[i] == '-') {
+				current1 = stack.look_front_value() - current1;
+			}
+			else if (input[i] == '*') {
+				current1 *= stack.look_front_value();
+			}
+			else if (input[i] == '/') {
+				current1 = stack.look_front_value() / current1;
+			}
+			
+			stack.del_front();
+			stack.push_front(current1,0);
+		}
+		//stack.print();
+	}
+	return stack.look_front_value();
+}
+
 int main() {
 	/*system("chcp 1251"); */system("chcp 65001"); system("cls");
 	string input{}, output{};
+	double num{};
 	cout << "Введите строку в инфиксном виде: ";
 	cin >> input; 
 	//input = "(a)+(f-b*c/(2-x)+y)/(a*r-k)";
-	input = "(5+-4)(3-2.5)";
+	input = "(5+(-4))(3-2.5)";
 	cout << endl << input << endl;
-	if (validCheck_Str(input)) {
+	input = upgradeInfix(input);
+	cout << input << endl;
+	if (validInfix_Str(input)) {
 		output = tranferInfToPost(input);
 		cout << endl << "строка в постфиксном виде: " << output << endl << endl;
+	}
+	else cout << endl << "NOT CORRECT INPUT!!!" << endl << endl;
+	if (validPostfix_Str(output)) {
+		num = tranferPostToNum(output);
+		cout << endl << "результат: " << num << endl << endl;
 	}
 	else cout << endl << "NOT CORRECT INPUT!!!" << endl << endl;
 	system("pause");
