@@ -42,7 +42,7 @@
 *.log
 *.pdb
 
-#tresh
+# tresh
 *.ilk
 *.lastbuildstate
 *.pdb
