@@ -127,8 +127,10 @@ bool validInfix_Str(string input) {
 		if ((input[i] == '.') && (!((i - 1) >= 0) || !(isdigit(input[i - 1])) || !((i + 1) < input.length()) || !(isdigit(input[i + 1])) || (checkPoint))) {
 			return false;								//при неправельном дробном числе 
 		}
-		if (isdigit(input[i]) && input[i + 1] == '(')
-			return false;								//при цифре перед '('
+		if ((isalnum(input[i]) && input[i + 1] == '(') || (isalnum(input[i + 1]) && input[i] == ')'))
+			return false;								//при цифре перед '(' или после ')'
+		if ((input[i] == '-' || input[i] == '+') && input[i - 1] == '(' && input[i + 1] == ')')
+			return false;								//при минусе или плюсе внутри скобок '(-)''(+)'
 		if (input[i] == '.') checkPoint = true;
 		if (isactions_and_equally(input[i])) checkPoint = false;
 		if ((checkBracket_And_Actions) && (isactions_and_equally(input[i])) && (input[i] != '-') && (input[i] != '+'))
@@ -143,6 +145,7 @@ bool validInfix_Str(string input) {
 		}
 		else checkBracket_And_Actions = false;
 		if (input[i] == ')') {
+			if (input[i - 1] == '(') return false;		//при пустых скобках 
 			--sumBracket;
 			checkBracket = false;
 		}
@@ -173,8 +176,11 @@ bool validInfix_Str(string input) {
 string upgradeInfix(string input) {
 	for (int i{}; i < input.length(); ++i) {
 		if (input[i] == ',') input[i] = '.';
-		if (isdigit(input[i]) && input[i + 1] == '('){
+		if (isalnum(input[i]) && input[i + 1] == '('){
 			input.insert(++i,"*");
+		}
+		if (input[i] == ')' && isalnum(input[i + 1])) {
+			input.insert(++i, "*");
 		}
 		if (input[i] == ')' && input[i + 1] == '(') {
 			input.insert(++i, "*");
@@ -188,7 +194,7 @@ string tranferInfToPost(string input) {
 	string output{};
 	Stack<char> stack;
 	for (int i{}; i < input.length(); ++i) {
-		if ((input[i] != '.') && !(isbracket(input[i])) && !(isdigit(input[i]))){
+		if ((input[i] != '.') && !(isbracket(input[i])) && !(isalnum(input[i]))){
 			output += ' ';
 		}
 		if (!isoperatr(input[i])) {
@@ -297,7 +303,7 @@ int main() {
 	cout << "Введите строку в инфиксном виде: ";
 	cin >> input; 
 	//input = "(a)+(f-b*c/(2-x)+y)/(a*r-k)";
-	input = "(5+(-4))(3-2.5)";
+	input = "4+2A/245*45s+d(d)k";
 	cout << endl << input << endl;
 	input = upgradeInfix(input);
 	cout << input << endl;
@@ -305,12 +311,12 @@ int main() {
 		output = tranferInfToPost(input);
 		cout << endl << "строка в постфиксном виде: " << output << endl << endl;
 	}
-	else cout << endl << "NOT CORRECT INPUT!!!" << endl << endl;
+	else cout << endl << "NOT CORRECT INPUT!!!(FOR tranferInfToPost)" << endl << endl;
 	if (validPostfix_Str(output)) {
 		num = tranferPostToNum(output);
 		cout << endl << "результат: " << num << endl << endl;
 	}
-	else cout << endl << "NOT CORRECT INPUT!!!" << endl << endl;
+	else cout << endl << "NOT CORRECT INPUT!!!(FOR tranferPostToNum)" << endl << endl;
 	system("pause");
 	return 0;
 }
