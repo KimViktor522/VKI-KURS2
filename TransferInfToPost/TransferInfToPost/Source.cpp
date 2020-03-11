@@ -176,15 +176,14 @@ bool validInfix_Str(string input) {
 string upgradeInfix(string input) {
 	for (int i{}; i < input.length(); ++i) {
 		if (input[i] == ',') input[i] = '.';
-		if (isalnum(input[i]) && input[i + 1] == '('){
-			input.insert(++i,"*");
+		if (input[i] == '(' && (input[i + 1] == '-')) input.insert(++i, "0"); //(-
+		if (i == 0 && (input[i] == '-')) {
+			input.insert(i, "0"); //-(
+			++i;
 		}
-		if (input[i] == ')' && isalnum(input[i + 1])) {
-			input.insert(++i, "*");
-		}
-		if (input[i] == ')' && input[i + 1] == '(') {
-			input.insert(++i, "*");
-		}
+		if (isalnum(input[i]) && input[i + 1] == '(') input.insert(++i,"*");
+		if (input[i] == ')' && isalnum(input[i + 1])) input.insert(++i, "*");
+		if (input[i] == ')' && input[i + 1] == '(') input.insert(++i, "*");
 	}
 	return input;
 }
@@ -285,6 +284,10 @@ double tranferPostToNum(string input) {
 				current1 *= stack.look_front_value();
 			}
 			else if (input[i] == '/') {
+				if (current1 == 0) {
+					cout << endl << "NOT CORRECT 0!!!" << endl;
+					return 0;
+				}
 				current1 = stack.look_front_value() / current1;
 			}
 			
@@ -303,7 +306,7 @@ int main() {
 	cout << "Введите строку в инфиксном виде: ";
 	cin >> input; 
 	//input = "(a)+(f-b*c/(2-x)+y)/(a*r-k)";
-	input = "4+2A/245*45s+d(d)k";
+	input = "5(1)/(5)";
 	cout << endl << input << endl;
 	input = upgradeInfix(input);
 	cout << input << endl;
