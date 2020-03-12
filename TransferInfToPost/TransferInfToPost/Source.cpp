@@ -305,8 +305,9 @@ int main() {
 	double num{};
 	cout << "Введите строку в инфиксном виде: ";
 	cin >> input; 
+	if (input[0] == '0')
 	//input = "(a)+(f-b*c/(2-x)+y)/(a*r-k)";
-	input = "5(1)/(5)";
+		input = "5/-4";
 	cout << endl << input << endl;
 	input = upgradeInfix(input);
 	cout << input << endl;
