@@ -68,16 +68,14 @@ public:
 			//cout << "Empty" << endl;
 			return 0;
 		}
-		Node* current{ front };
-		return current->value;
+		return front->value;
 	}
 	int look_front_priority() {
 		if (!stacksize) {
 			//cout << "Empty" << endl;
 			return 0;
 		}
-		Node* current{ front };
-		return current->priority;
+		return front->priority;
 	}
 	//проверка на пустату стека
 	bool empty() {
