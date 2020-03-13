@@ -6,18 +6,24 @@
 using namespace std;
 using mas = vector<vector<int>>;
 
-const int N{ 10 }; //количество пар
-
-//создание вектора
-void creatMas(mas& array) {
+//СЃРѕР·РґР°РЅРёРµ РІРµРєС‚РѕСЂР°
+void creatMas(mas& array, int N) {
 	array.resize(N);
 	for (int i{}; i < N; ++i) {
 		array[i].resize(N);
 	}
 }
 
-//заполнение приоритетов мущин или женцин
-void inputValunInMas(mas& array) {
+//СЃРѕР·РґР°РЅРёРµ РІРµРєС‚РѕСЂР° РґР»СЏ С‚Р°Р±Р»РёС†С‹ РїСЂРёРѕСЂРёС‚РѕРІ
+void creatMasF(mas& array, int N) {
+	array.resize(N);
+	for (int i{}; i < N; ++i) {
+		array[i].resize(2);
+	}
+}
+
+//Р·Р°РїРѕР»РЅРµРЅРёРµ РїСЂРёРѕСЂРёС‚РµС‚РѕРІ РјСѓС‰РёРЅ РёР»Рё Р¶РµРЅС†РёРЅ
+void inputValunInMas(mas& array, int N) {
 	int j{}, p{};
 	for (int i{}; i < N; ++i) {
 		p = N-1;
@@ -32,8 +38,8 @@ void inputValunInMas(mas& array) {
 
 }
 
-//вывод приоритетов мущин или женцин
-void printMas(mas& array) {
+//РІС‹РІРѕРґ РїСЂРёРѕСЂРёС‚РµС‚РѕРІ РјСѓС‰РёРЅ РёР»Рё Р¶РµРЅС†РёРЅ
+void printMas(mas& array, int N) {
 	for (int i{}; i < N; ++i) {
 		cout << i << ": ";
 		for (int j{}; j < N; ++j) {
@@ -44,8 +50,8 @@ void printMas(mas& array) {
 	cout << endl;
 }
 
-//вывод таблицы приоритных пар
-void printMasPF(mas& array) {
+//РІС‹РІРѕРґ С‚Р°Р±Р»РёС†С‹ РїСЂРёРѕСЂРёС‚РЅС‹С… РїР°СЂ
+void printMasPF(mas& array, int N) {
 	cout << "M/W";
 	for (int i{}; i < N; ++i) cout << i << ":\t";
 	cout << endl;
@@ -59,8 +65,8 @@ void printMasPF(mas& array) {
 	cout << endl;
 }
 
-//вывод пар
-void printMasFamily(int(&family)[N][2]) {
+//РІС‹РІРѕРґ РїР°СЂ
+void printMasFamily(mas& family, int N) {
 	cout << "M W" << endl;
 	for (int i{}; i < N; ++i) {
 		for (int j{}; j < 2; ++j) {
@@ -72,8 +78,8 @@ void printMasFamily(int(&family)[N][2]) {
 	cout << endl;
 }
 
-//построенеи таблицы приоритетов
-void unionTwoMasInOne(mas& priorityFamily, mas& man, mas& woman) {
+//РїРѕСЃС‚СЂРѕРµРЅРµРё С‚Р°Р±Р»РёС†С‹ РїСЂРёРѕСЂРёС‚РµС‚РѕРІ
+void unionTwoMasInOne(mas& priorityFamily, mas& man, mas& woman, int N) {
 	int number{}, j{};
 	for (int i{}; i < N; ++i) {
 		for (int k{}; k < N; ++k){
@@ -90,8 +96,8 @@ void unionTwoMasInOne(mas& priorityFamily, mas& man, mas& woman) {
 
 }
 
-//определение пар и запись в отдельный массив
-void findFamily(int (&family)[N][2], mas& priorityFamily) {
+//РѕРїСЂРµРґРµР»РµРЅРёРµ РїР°СЂ Рё Р·Р°РїРёСЃСЊ РІ РѕС‚РґРµР»СЊРЅС‹Р№ РјР°СЃСЃРёРІ
+void findFamily(mas& family, mas& priorityFamily, int N) {
 	int max{}, k{}, l{}, numFamily{};
 	for (int n{}; n < N; ++n) {
 		max = 0;
@@ -115,20 +121,24 @@ void findFamily(int (&family)[N][2], mas& priorityFamily) {
 int main() {
 	system("chcp 1251"); system("chcp 65001"); system("cls");
 	srand((unsigned)time(0));
-	mas man{}; creatMas(man); inputValunInMas(man);
-	mas woman{}; creatMas(woman); inputValunInMas(woman);
-	mas priorityFamily{}; creatMas(priorityFamily);
+	int N{}; //РєРѕР»РёС‡РµСЃС‚РІРѕ РїР°СЂ
+	cout << "Р’РІРµРґРёС‚Рµ РєРѕР»РёС‡РµСЃС‚РІРѕ РїР°СЂ: ";
+	cin >> N;
+	cout << endl;
+	mas man{}; creatMas(man, N); inputValunInMas(man, N);
+	mas woman{}; creatMas(woman, N); inputValunInMas(woman, N);
+	mas priorityFamily{}; creatMas(priorityFamily, N);
 	cout << "man" << endl;
-	printMas(man);
+	printMas(man, N);
 	cout << "woman" << endl;
-	printMas(woman);
-	unionTwoMasInOne(priorityFamily, man, woman);
-	cout << "priority family" << endl;
-	printMasPF(priorityFamily);
-	int family[N][2]{};
-	findFamily(family, priorityFamily);
+	printMas(woman, N);
+	unionTwoMasInOne(priorityFamily, man, woman, N);
+	cout << endl << "priority family" << endl;
+	printMasPF(priorityFamily, N);
+	mas family{}; creatMasF(family, N);
+	findFamily(family, priorityFamily, N);
 	cout << "family" << endl;
-	printMasFamily(family);
+	printMasFamily(family, N);
 
 	system("pause");
 	return 0;
