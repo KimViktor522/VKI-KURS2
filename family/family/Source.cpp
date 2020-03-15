@@ -97,8 +97,8 @@ void unionTwoMasInOne(mas& priorityFamily, mas& man, mas& woman, int N) {
 
 }
 
-//определение пар и запись в отдельный массив
-void findFamily(mas& family, mas& priorityFamily, int N) {
+//определение пар и запись в отдельный массив краткий анализ
+void shortFindFamily(mas& family, mas& priorityFamily, int N) {
 	int max{}, k{}, l{}, numFamily{};
 	for (int n{}; n < N; ++n) {
 		max = 0;
@@ -119,22 +119,72 @@ void findFamily(mas& family, mas& priorityFamily, int N) {
 	}
 }
 
+//определение пар и запись в отдельный массив полный анализ
+int fullFindFamily(mas& family, mas& priorityFamily, int priority, int N) {
+	int max{}, m{}, w{}, numFamily{}, sumMax{}, sumPriority{ priority };
+	for (int n{}; n < N; ++n) {
+		max = 0;
+		for (int i{}; i < N; ++i) {
+			for (int j{}; j < N; ++j) {
+				if (priorityFamily[i][j] == max) ++sumMax;
+				if (priorityFamily[i][j] > max) {
+					max = priorityFamily[i][j];
+					sumMax = 0;
+					m = i;
+					w = j;
+				}
+			}
+		}
+		cout << sumMax << endl;
+		if (sumMax > 1) {
+			for (int i{}; i < N; ++i) {
+				mas masCopFamily{};	creatMasF(masCopFamily, N);	//создаем трехмерный массив с копиями массива priorityFamily		
+				mas masCopPriorityFamily{};	creatMas(masCopPriorityFamily, N); 
+				masCopPriorityFamily = priorityFamily;
+				masCopFamily = family; 
+				//fullFindFamily (masCopFamily, masCopPriorityFamily, sumPriority, N); //доделать(
+			}			
+		}
+		sumPriority += max;
+		family[numFamily][0] = m;
+		family[numFamily][1] = w;
+		++numFamily;
+		for (int i{}; i < N; ++i) priorityFamily[i][w] = 0;
+		for (int i{}; i < N; ++i) priorityFamily[m][i] = 0;
+	}
+	return sumPriority;
+}
+
+
 //второй способ опеделения пары
 void newFindFamily(mas& family, mas& man, mas& woman, int N) {
-	int num{};
+	int numFamily{};
 	for (int k{}; k < N; ++k) 
 		for (int j{}; j < N; ++j) {
 			for (int i{}; i < N; ++i) {
 				if (man[i][0] == -1) continue;
 				if (i == woman[man[i][k]][j]) {
-					family[num][0] = i;
-					family[num][1] = man[i][k];
-					++num;
+					family[numFamily][0] = i;
+					family[numFamily][1] = man[i][k];
+					++numFamily;
 					for (int l{}; l < N; ++l) woman[man[i][k]][l] = -1;
 					for (int l{}; l < N; ++l) man[i][l] = -1;
 				}
 			}
-			if (num == N) return;
+			if (numFamily == (N - 1))
+				for (int i{}; i < N; ++i) 
+					if (man[i][0] != -1)
+						for (int p{}; p < N; ++p) 
+							if (woman[p][0] != -1) {
+								family[numFamily][0] = i;
+								family[numFamily][1] = p;
+								++numFamily;
+								for (int l{}; l < N; ++l) woman[p][l] = -1;
+								for (int l{}; l < N; ++l) man[i][l] = -1;
+								return;
+							}						
+			if (numFamily == N) return; 
+			if ((k + 1) == j) break;
 		}
 }
 
@@ -157,7 +207,8 @@ int main() {
 	unionTwoMasInOne(priorityFamily, man, woman, N);
 	cout << endl << "priority family" << endl;
 	printMasPF(priorityFamily, N);
-	findFamily(family, priorityFamily, N);
+	//shortFindFamily(family, priorityFamily, N);
+	fullFindFamily(family, priorityFamily, 0, N);
 	cout << "family" << endl;
 	printMasFamily(family, N); 
 	cout << "2 способ: " << endl;	
