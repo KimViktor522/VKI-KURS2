@@ -120,13 +120,13 @@ void shortFindFamily(mas& family, mas& priorityFamily, int N) {
 }
 
 //определение пар и запись в отдельный массив полный анализ
-int fullFindFamily(mas& family, mas& priorityFamily, int priority, int N) {
+int fullFindFamily(mas& family, mas& priorityFamily, int priority, bool check, bool checkRec, int N) {
 	int max{}, m{}, w{}, numFamily{}, sumMax{}, sumPriority{ priority };
 	for (int n{}; n < N; ++n) {
 		max = 0;
 		for (int i{}; i < N; ++i) {
 			for (int j{}; j < N; ++j) {
-				if (priorityFamily[i][j] == max) ++sumMax;
+				if ((priorityFamily[i][j] == max) && (check)) ++sumMax;
 				if (priorityFamily[i][j] > max) {
 					max = priorityFamily[i][j];
 					sumMax = 0;
@@ -137,20 +137,58 @@ int fullFindFamily(mas& family, mas& priorityFamily, int priority, int N) {
 		}
 		cout << sumMax << endl;
 		if (sumMax > 1) {
-			for (int i{}; i < N; ++i) {
-				mas masCopFamily{};	creatMasF(masCopFamily, N);	//создаем трехмерный массив с копиями массива priorityFamily		
-				mas masCopPriorityFamily{};	creatMas(masCopPriorityFamily, N); 
-				masCopPriorityFamily = priorityFamily;
-				masCopFamily = family; 
-				//fullFindFamily (masCopFamily, masCopPriorityFamily, sumPriority, N); //доделать(
-			}			
+			int* array = new int [sumMax + 1];
+			int maxArray{}, numI{};
+			vector<mas> masCopFamily{};	masCopFamily.resize(sumMax + 1);	//создаем трехмерный массив с копиями массива priorityFamily		
+			vector<mas> masCopPriorityFamily{}; masCopPriorityFamily.resize(sumMax + 1);
+			for (int k{}; k < N; ++k) {
+				creatMasF(masCopFamily[k], N);
+				creatMas(masCopPriorityFamily[k], N);
+				masCopFamily[k] = family; 
+				masCopPriorityFamily[k] = priorityFamily;
+				for (int i{}; i < N; ++i) {
+					for (int j{}; j < N; ++j) {
+						printMasPF(masCopPriorityFamily[k], N);
+						if (masCopPriorityFamily[k][i][j] == max) {
+							m = i;
+							w = j;
+							masCopFamily[k][numFamily][0] = m;
+							masCopFamily[k][numFamily][1] = w;
+							++numFamily;
+							for (int i{}; i < N; ++i) masCopPriorityFamily[k][i][w] = 0;
+							for (int i{}; i < N; ++i) masCopPriorityFamily[k][m][i] = 0; 
+							printMasPF(priorityFamily, N);
+							printMasPF(masCopPriorityFamily[k], N);
+							array[k] = fullFindFamily(masCopFamily[k], masCopPriorityFamily[k], sumPriority + max, false, false, N); //доделать(
+							if (array[k] > maxArray) {
+								maxArray = array[k];
+								numI = k;
+							}
+							++k;
+							creatMasF(masCopFamily[k], N);
+							creatMas(masCopPriorityFamily[k], N);
+							masCopFamily[k] = family;
+							masCopPriorityFamily[k] = priorityFamily;
+						}
+					}
+				}
+				priorityFamily = masCopPriorityFamily[numI];
+				family = masCopFamily[numI];
+				return maxArray;
+			}
+			family = masCopFamily[numI];
+			priorityFamily = masCopPriorityFamily[numI];
 		}
-		sumPriority += max;
-		family[numFamily][0] = m;
-		family[numFamily][1] = w;
-		++numFamily;
-		for (int i{}; i < N; ++i) priorityFamily[i][w] = 0;
-		for (int i{}; i < N; ++i) priorityFamily[m][i] = 0;
+		else {
+			sumPriority += max;
+			family[numFamily][0] = m;
+			family[numFamily][1] = w;
+			++numFamily;
+			for (int i{}; i < N; ++i) priorityFamily[i][w] = 0;
+			for (int i{}; i < N; ++i) priorityFamily[m][i] = 0;
+		}
+		if (numFamily == N) return sumPriority;
+		if (checkRec) check = true;
 	}
 	return sumPriority;
 }
@@ -208,7 +246,7 @@ int main() {
 	cout << endl << "priority family" << endl;
 	printMasPF(priorityFamily, N);
 	//shortFindFamily(family, priorityFamily, N);
-	fullFindFamily(family, priorityFamily, 0, N);
+	fullFindFamily(family, priorityFamily, 0, false, true, N);
 	cout << "family" << endl;
 	printMasFamily(family, N); 
 	cout << "2 способ: " << endl;	
