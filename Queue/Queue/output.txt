@@ -1,0 +1,5 @@
+1
+Memory overflow
+0
+3
+Emptyqueue
