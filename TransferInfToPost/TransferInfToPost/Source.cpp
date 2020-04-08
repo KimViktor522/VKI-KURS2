@@ -305,7 +305,7 @@ int main() {
 	cin >> input; 
 	if ((input[0] == '0') && (input.length() == 1))
 	//input = "(a)+(f-b*c/(2-x)+y)/(a*r-k)";
-		input = "((3+(1-(5+(7*7))))*(2/(6-6)))";
+		input = "((a/c)f)+(((((v*r)/k)+e)/m)-((b-d)*n))";
 	cout << endl << input << endl;
 	input = upgradeInfix(input);
 	cout << input << endl;
