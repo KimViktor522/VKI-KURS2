@@ -14,7 +14,7 @@ public:
 	T value{};
 	int numIncoming{0};
 	int numOutcoming{0};
-	int intСomponent{0};//к какой компаненте относится точка
+	int intРЎomponent{0};//Рє РєР°РєРѕР№ РєРѕРјРїР°РЅРµРЅС‚Рµ РѕС‚РЅРѕСЃРёС‚СЃСЏ С‚РѕС‡РєР°
 	Node<T>* next;
 	Child<T>* child;
 };
@@ -29,14 +29,14 @@ public:
 
 template<typename T>
 class Graph {
-	int graphSize{0};//длина
-	int num_Connectivity_Components{1};//количество компонентов связности
+	int graphSize{0};//РґР»РёРЅР°
+	int num_Connectivity_Components{1};//РєРѕР»РёС‡РµСЃС‚РІРѕ РєРѕРјРїРѕРЅРµРЅС‚РѕРІ СЃРІСЏР·РЅРѕСЃС‚Рё
 	Node<T>* first{ nullptr };
 public:
 	~Graph() {
 		clear();
 	}
-	//поиск определенного числа 
+	//РїРѕРёСЃРє РѕРїСЂРµРґРµР»РµРЅРЅРѕРіРѕ С‡РёСЃР»Р° 
 	Node<T>* Search_elem(T data) {
 		Node<T>* current{ first };
 		if (current == nullptr) return nullptr;
@@ -46,7 +46,7 @@ public:
 		}
 		return nullptr;
 	}
-	//добавляет элемент в начало 
+	//РґРѕР±Р°РІР»СЏРµС‚ СЌР»РµРјРµРЅС‚ РІ РЅР°С‡Р°Р»Рѕ 
 	Node<T>* push(T data) {
 		if (Search_elem(data) != nullptr) return nullptr;
 		if (first == nullptr) {
@@ -74,7 +74,7 @@ public:
 			return current;
 		}
 	}
-	//создает связи с детми
+	//СЃРѕР·РґР°РµС‚ СЃРІСЏР·Рё СЃ РґРµС‚РјРё
 	void add_Child(T data, T dataChild) {
 		if (!graphSize) {
 			return;
@@ -96,16 +96,16 @@ public:
 			newCurrentChild->child = currentChild;
 		}
 	}
-	//поиск того элемента который еще не проверялся
+	//РїРѕРёСЃРє С‚РѕРіРѕ СЌР»РµРјРµРЅС‚Р° РєРѕС‚РѕСЂС‹Р№ РµС‰Рµ РЅРµ РїСЂРѕРІРµСЂСЏР»СЃСЏ
 	Node<T>* search_Free_Element() {
 		Node<T>* current{ first };
 		for (int i{ 0 }; i < graphSize; ++i) {		
-			if (current->intСomponent == 0) return current;
+			if (current->intРЎomponent == 0) return current;
 			else current = current->next;
 		}
 		return nullptr;
 	}
-	//проверка звязи между вержинами 
+	//РїСЂРѕРІРµСЂРєР° Р·РІСЏР·Рё РјРµР¶РґСѓ РІРµСЂР¶РёРЅР°РјРё 
 	bool check_Connectivity_Tops(T num1, T num2) {
 		Node<T>* current{ first };
 		for (int i{ 0 }; i < graphSize; ++i) {
@@ -121,13 +121,13 @@ public:
 		}
 		return false;
 	}
-	//поиск компонентов связности
+	//РїРѕРёСЃРє РєРѕРјРїРѕРЅРµРЅС‚РѕРІ СЃРІСЏР·РЅРѕСЃС‚Рё
 	void search_For_Connectivity_Components_rec(Node<T>* current) {
-		current->intСomponent = num_Connectivity_Components;
+		current->intРЎomponent = num_Connectivity_Components;
 		if (current->child != nullptr) {
 			Child<T>* currentSec{ current->child };
 			for (int k{ 0 }; k < current->numOutcoming; ++k) {
-				if (currentSec->next->intСomponent == 0) {
+				if (currentSec->next->intРЎomponent == 0) {
 					search_For_Connectivity_Components_rec(currentSec->next);
 				}
 				else if (currentSec->child != nullptr) currentSec = currentSec->child;
@@ -148,15 +148,15 @@ public:
 		}
 		return;
 	}
-	//вывод количества компонентов связности
+	//РІС‹РІРѕРґ РєРѕР»РёС‡РµСЃС‚РІР° РєРѕРјРїРѕРЅРµРЅС‚РѕРІ СЃРІСЏР·РЅРѕСЃС‚Рё
 	int look_Num_Connectivity_Components() {
 		return num_Connectivity_Components;
 	}
-	//количество элементов
+	//РєРѕР»РёС‡РµСЃС‚РІРѕ СЌР»РµРјРµРЅС‚РѕРІ
 	int look_graphSize() {
 		return graphSize;
 	}
-	//полностью очищает графа
+	//РїРѕР»РЅРѕСЃС‚СЊСЋ РѕС‡РёС‰Р°РµС‚ РіСЂР°С„Р°
 	void clear() {
 		if (!graphSize) {
 			first = nullptr;
@@ -172,14 +172,14 @@ public:
 		first = nullptr;
 		graphSize = 0;
 	}
-	//вывод номеров подграфа
+	//РІС‹РІРѕРґ РЅРѕРјРµСЂРѕРІ РїРѕРґРіСЂР°С„Р°
 	int num_Subgraph(int numElem) {
 		Node<T>* current{ first };
 		int num{};
 		for (int i{ 0 }; i < numElem; ++i) current = current->next;
-		return current->intСomponent;
+		return current->intРЎomponent;
 	}
-	//выводит граф
+	//РІС‹РІРѕРґРёС‚ РіСЂР°С„
 	void print() {
 		if (!graphSize) return;
 		Node<T>* current{ first };
@@ -201,10 +201,10 @@ int main() {
 	else {
 		Graph<int> graph;
 		string str{}, tranferStrToInt{};
-		int tops{}/*вершины*/, ribs{}/*ребра*/;
+		int tops{}/*РІРµСЂС€РёРЅС‹*/, ribs{}/*СЂРµР±СЂР°*/;
 		bool check{};
 		getline(inputFail, str); 
-		for (int i{}; i < (int)str.length(); ++i) {			//запись количества вершин графа и количества ребер
+		for (int i{}; i < (int)str.length(); ++i) {			//Р·Р°РїРёСЃСЊ РєРѕР»РёС‡РµСЃС‚РІР° РІРµСЂС€РёРЅ РіСЂР°С„Р° Рё РєРѕР»РёС‡РµСЃС‚РІР° СЂРµР±РµСЂ
 			if ((i == (int)str.length()) || (str[i] != ' ')) {
 				tranferStrToInt.clear();
 				while (str[i] != ' ' && i != str.length()) {
@@ -216,7 +216,7 @@ int main() {
 				check = true;
 			}
 		}
-		for (int i{ 1 }; i <= tops; ++i) graph.push(i);		//добавление точек
+		for (int i{ 1 }; i <= tops; ++i) graph.push(i);		//РґРѕР±Р°РІР»РµРЅРёРµ С‚РѕС‡РµРє
 		int num1{}, num2{};
 		for (int p{ 0 }; p < ribs; ++p) {
 			getline(inputFail, str);
@@ -233,15 +233,15 @@ int main() {
 					check = true;
 				}
 			}
-			graph.add_Child(num1, num2);//создает двойные связи (неориентированный граф)
+			graph.add_Child(num1, num2);//СЃРѕР·РґР°РµС‚ РґРІРѕР№РЅС‹Рµ СЃРІСЏР·Рё (РЅРµРѕСЂРёРµРЅС‚РёСЂРѕРІР°РЅРЅС‹Р№ РіСЂР°С„)
 			graph.add_Child(num2, num1);
 		}
 		graph.print();
 		graph.search_For_Connectivity_Components_rec(graph.search_Free_Element());
-		//вывод в файл
+		//РІС‹РІРѕРґ РІ С„Р°Р№Р»
 		outputFail << graph.look_Num_Connectivity_Components() << endl;
 		for (int i{ 0 }; i < graph.look_graphSize(); ++i) outputFail << graph.num_Subgraph(i) << " ";
-		//вывод в консоль
+		//РІС‹РІРѕРґ РІ РєРѕРЅСЃРѕР»СЊ
 		cout << graph.look_Num_Connectivity_Components() << endl;
 		for (int i{ 0 }; i < graph.look_graphSize(); ++i) cout << graph.num_Subgraph(i) << " ";
 		cout << endl;
