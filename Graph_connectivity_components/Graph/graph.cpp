@@ -12,7 +12,9 @@ class Node {
 	friend class Child<T>;
 public:
 	T value{};
-	int numIncoming{};
+	int numIncoming{0};
+	int numOutcoming{0};
+	int intСomponent{0};//к какой компаненте относится точка
 	Node<T>* next;
 	Child<T>* child;
 };
@@ -27,10 +29,9 @@ public:
 
 template<typename T>
 class Graph {
-	int graphSize{};//длина
-	int headSize{};
+	int graphSize{0};//длина
+	int num_Connectivity_Components{1};//количество компонентов связности
 	Node<T>* first{ nullptr };
-	Node<T>* head{ nullptr };
 public:
 	~Graph() {
 		clear();
@@ -52,6 +53,7 @@ public:
 			Node<T>* current = new Node<T>;
 			current->value = data;
 			current->numIncoming = 0;
+			current->numOutcoming = 0;
 			current->next = nullptr;
 			current->child = nullptr;
 			first = current;
@@ -62,6 +64,7 @@ public:
 			Node<T>* current = new Node<T>;
 			current->value = data;
 			current->numIncoming = 0;
+			current->numOutcoming = 0;
 			current->next = nullptr;
 			current->child = nullptr;
 			Node<T>* currentOld{ first };
@@ -81,6 +84,7 @@ public:
 		Child<T>* currentChild = new Child<T>;
 		Node<T>* currentNodeChild{ Search_elem(dataChild) };
 		if (currentNodeChild == nullptr) return;
+		++current->numOutcoming;
 		++currentNodeChild->numIncoming;
 		currentChild->next = currentNodeChild;
 		currentChild->child = nullptr;
@@ -92,68 +96,65 @@ public:
 			newCurrentChild->child = currentChild;
 		}
 	}
-	//добавляет новый элемент в head
-	Node<T>* head_push(T data) {
-		if (head == nullptr) {
-			Node<T>* current = new Node<T>;
-			current->value = data;
-			current->numIncoming = 0;
-			current->next = nullptr;
-			current->child = nullptr;
-			head = current;
-			++headSize;
-			return current;
-		}
-		else {
-			Node<T>* current = new Node<T>;
-			current->value = data;
-			current->numIncoming = 0;
-			current->next = nullptr;
-			current->child = nullptr;
-			Node<T>* currentOld{ head };
-			while (currentOld->next != nullptr)	currentOld = currentOld->next;
-			currentOld->next = current;
-			++headSize;
-			return current;
-		}
-	}
-	//проверка head на элемент 
-	bool check_Search_elem(T data) {
-		Node<T>* current{ head };
-		if (!headSize) return true;
-		else while (current != nullptr) {
-			if (current->value == data) return false;
-			current = current->next;
-		}
-		return true;
-	}
-	//перестраиваем граф
-	bool rebuild() {
-		if (!graphSize) {
-			return false;
-		}
+	//поиск того элемента который еще не проверялся
+	Node<T>* search_Free_Element() {
 		Node<T>* current{ first };
-		Child<T>* currentChild{ nullptr };
-		int num{};
-		for (int i{}; i < graphSize; ++i) {
-			while (current != nullptr) {
-				if ((current->numIncoming == 0) && (check_Search_elem(current->value))) {
-					head_push(current->value);
-					++num;
-					if (current->child != nullptr) {
-						currentChild = current->child;
-						while (currentChild != nullptr) {
-							--currentChild->next->numIncoming;
-							currentChild = currentChild->child;
-						}
-					}
-				}
-				current = current->next;
-			}
-			if (graphSize == headSize) return true;
-			current = first;
+		for (int i{ 0 }; i < graphSize; ++i) {		
+			if (current->intСomponent == 0) return current;
+			else current = current->next;
 		}
-		return false; //if ((num == 0) || (graphSize > headSize)) 
+		return nullptr;
+	}
+	//проверка звязи между вержинами 
+	bool check_Connectivity_Tops(T num1, T num2) {
+		Node<T>* current{ first };
+		for (int i{ 0 }; i < graphSize; ++i) {
+			if (current->value == num1) break;
+			else current = current->next;
+		}
+		if (current->child != nullptr) {
+			Child<T>* currentSec{ current->child };
+			for (int i{ 0 }; i < current->numOutcoming; ++i) {
+				if (currentSec->next->value == num2) return true;
+				else if (currentSec->child != nullptr) currentSec = currentSec->child;
+			}
+		}
+		return false;
+	}
+	//поиск компонентов связности
+	void search_For_Connectivity_Components_rec(Node<T>* current) {
+		current->intСomponent = num_Connectivity_Components;
+		if (current->child != nullptr) {
+			Child<T>* currentSec{ current->child };
+			for (int k{ 0 }; k < current->numOutcoming; ++k) {
+				if (currentSec->next->intСomponent == 0) {
+					search_For_Connectivity_Components_rec(currentSec->next);
+				}
+				else if (currentSec->child != nullptr) currentSec = currentSec->child;
+				else {
+					if (search_Free_Element() != nullptr) {
+						if (check_Connectivity_Tops(currentSec->next->value, search_Free_Element()->value) == false) ++num_Connectivity_Components;
+						search_For_Connectivity_Components_rec(search_Free_Element());
+					}
+					return;
+				}
+			}
+		}
+		else {			
+			if (search_Free_Element() != nullptr) {
+				++num_Connectivity_Components;
+				search_For_Connectivity_Components_rec(search_Free_Element());
+			}
+		}
+		return;
+	}
+	//вывод количества компонентов связности
+	int look_Num_Connectivity_Components() {
+		return num_Connectivity_Components;
+	}
+	//количество элементов
+	int look_graphSize() {
+		return graphSize;
 	}
 	//полностью очищает графа
 	void clear() {
@@ -171,28 +172,17 @@ public:
 		first = nullptr;
 		graphSize = 0;
 	}
-	int look_graphSize() {
-		return graphSize;
-	}
-	int look_I_num_head(int num) {
-		Node<T>* current{ head };
-		for (int i{}; i < num; ++i, current = current->next);
-		return current->value;
+	//вывод номеров подграфа
+	int num_Subgraph(int numElem) {
+		Node<T>* current{ first };
+		int num{};
+		for (int i{ 0 }; i < numElem; ++i) current = current->next;
+		return current->intСomponent;
 	}
 	//выводит граф
 	void print() {
 		if (!graphSize) return;
 		Node<T>* current{ first };
-		while (current != nullptr) {
-			cout << current->value << "  ";
-			current = current->next;
-		}
-		cout << endl;
-	}
-	//выводит перестроиный граф
-	void printhead() {
-		if (!graphSize) return;
-		Node<T>* current{ head };
 		while (current != nullptr) {
 			cout << current->value << "  ";
 			current = current->next;
@@ -214,7 +204,7 @@ int main() {
 		int tops{}/*вершины*/, ribs{}/*ребра*/;
 		bool check{};
 		getline(inputFail, str); 
-		for (int i{}; i < (int)str.length(); ++i) {			//запись количества вершин графа и количества ребер(не юзаю)
+		for (int i{}; i < (int)str.length(); ++i) {			//запись количества вершин графа и количества ребер
 			if ((i == (int)str.length()) || (str[i] != ' ')) {
 				tranferStrToInt.clear();
 				while (str[i] != ' ' && i != str.length()) {
@@ -226,8 +216,9 @@ int main() {
 				check = true;
 			}
 		}
+		for (int i{ 1 }; i <= tops; ++i) graph.push(i);		//добавление точек
 		int num1{}, num2{};
-		while (!inputFail.eof()) {
+		for (int p{ 0 }; p < ribs; ++p) {
 			getline(inputFail, str);
 			check = false;
 			for (int i{}; i < (int)str.length(); ++i) {
@@ -239,23 +230,22 @@ int main() {
 					}
 					if (!check) num1 = stoi(tranferStrToInt);
 					else num2 = stoi(tranferStrToInt);
-					graph.push(stoi(tranferStrToInt));
 					check = true;
 				}
 			}
-			graph.add_Child(num1, num2);
+			graph.add_Child(num1, num2);//создает двойные связи (неориентированный граф)
+			graph.add_Child(num2, num1);
 		}
 		graph.print();
-		if (graph.rebuild()) {
-			graph.printhead();
-			for (int i{}; i < graph.look_graphSize(); ++i) {
-				outputFail << graph.look_I_num_head(i) << " ";
-			}
-		}
-		else {
-			cout << "-1" << endl;
-			outputFail << "-1";
-		}
+		graph.search_For_Connectivity_Components_rec(graph.search_Free_Element());
+		//вывод в файл
+		outputFail << graph.look_Num_Connectivity_Components() << endl;
+		for (int i{ 0 }; i < graph.look_graphSize(); ++i) outputFail << graph.num_Subgraph(i) << " ";
+		//вывод в консоль
+		cout << graph.look_Num_Connectivity_Components() << endl;
+		for (int i{ 0 }; i < graph.look_graphSize(); ++i) cout << graph.num_Subgraph(i) << " ";
+		cout << endl;
+
 	}
 	inputFail.close();
 	outputFail.close();
