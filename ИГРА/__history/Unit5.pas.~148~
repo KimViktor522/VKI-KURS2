@@ -1,0 +1,404 @@
+unit Unit5;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, StdCtrls, ExtCtrls;
+type
+  TForm5 = class(TForm)
+    Button1: TButton;
+    PaintBox1: TPaintBox;
+    Button2: TButton;
+    procedure PaintBox1MouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
+    procedure FormCreate(Sender: TObject);
+    procedure Button2Click(Sender: TObject);
+    procedure Button1Click(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+const n=11;
+      dx=40;
+      dy=40;
+      x0=40;
+      y0=40;
+type Tpole=array[1..n,1..n] of integer;
+var
+  Form5: TForm5;
+  pole:Tpole;
+  slojnost,out,i2,j2,napr:integer;
+  stop:boolean;
+
+implementation   
+uses unit2,Unit1,Unit6,Unit7;
+
+{$R *.dfm}
+
+
+procedure prov0;      //выигрышь
+begin
+  begin
+    Form7.Show;
+  end;
+end;
+
+function prov1(i,j:integer):integer;     //проверка появление стрелки
+var prov:integer;
+begin
+  if (i>1) then
+  begin
+    if pole[i-1,j]<>0 then
+      prov:=1;
+    if (j>1) then
+      if pole[i-1,j-1]<>0 then
+        prov:=1;
+    if (j<n) then
+      if pole[i-1,j+1]<>0 then
+        prov:=1;
+  end;
+  if (i<n) then
+    if pole[i+1,j]<>0 then
+      prov:=1;
+  if (i<n) then
+  begin
+    if pole[i+1,j]<>0 then
+      prov:=1;
+    if (j>1) then
+      if pole[i+1,j-1]<>0 then
+        prov:=1;
+    if (j<n) then
+      if pole[i+1,j+1]<>0 then
+        prov:=1;
+  end;
+  if (j<n) then
+    if pole[i,j+1]<>0 then
+      prov:=1;
+  if (prov=1) and (i>2) then
+  begin
+    if pole[i-2,j]<>0 then
+      prov:=2;
+    if (j>1) then
+      if pole[i-2,j-1]<>0 then
+        prov:=2;
+    if (j<n) then
+      if pole[i-2,j+1]<>0 then
+        prov:=2;
+  end;
+  if (prov=1) and (i<n-1) then
+  begin
+    if pole[i+2,j]<>0 then
+      prov:=2;
+    if (j>1) then
+      if pole[i+2,j-1]<>0 then
+        prov:=2;
+    if (j<n) then
+      if pole[i+2,j+1]<>0 then
+        prov:=2;
+  end;
+  if (prov=1) and (j>2) then
+  begin
+    if pole[i,j-2]<>0 then
+      prov:=2;
+    if (i>1) then
+      if pole[i-1,j-2]<>0 then
+        prov:=2;
+    if (i<n) then
+      if pole[i+1,j-2]<>0 then
+        prov:=2;
+  end;
+  if (prov=1) and (j<n-1) then
+  begin
+    if pole[i,j+2]<>0 then
+      prov:=2;
+    if (i>1) then
+      if pole[i-1,j+2]<>0 then
+        prov:=2;
+    if (i<n) then
+      if pole[i+1,j+2]<>0 then
+        prov:=2;
+  end;
+  if prov>=1 then
+    prov1:=1
+  else
+    prov1:=0;
+end;              
+            
+
+procedure DrawP(pole:Tpole);               // удалить позже
+var i,j,x,y:integer;
+begin
+  for i:=1 to n do
+    for j:=1 to n do
+        with form5.paintbox1.canvas do
+        begin
+          pen.width:=1;
+          pen.color:=clblack;
+          x:=x0+(j-1)*dx;
+          y:=y0+(i-1)*dy;
+          textout(x+20,y+20,inttostr(pole[i,j]));
+        end;
+end;
+
+function prov2_0(i,j,t:integer;var pole:tpole):boolean;         //проверка для заполнения обратной волны
+var
+  pr:boolean;
+begin
+  pr:=false;
+  if (i+1<=n-1) and (pole[i+1,j]=0) then
+  begin
+    pole[i+1,j]:=t+1;
+    pr:=true;
+  end;
+  if (i-1>0) and (pole[i-1,j]=0)then
+  begin
+    pole[i-1,j]:=t+1;
+    pr:=true;
+  end;
+  if (j+1<=n-1) and (pole[i,j+1]=0) then
+  begin
+    pole[i,j+1]:=t+1;
+    pr:=true;
+  end;
+  if (j-1>0) and (pole[i,j-1]=0) then
+  begin
+    pole[i,j-1]:=t+1;
+    pr:=true;
+  end;
+  prov2_0:=pr;
+end;
+              
+procedure prov2_1(i,j,t:integer; pole:tpole);           //проверка стороны
+begin
+  if t=1 then
+  begin
+    if (i+1<=n-1) and (pole[i+1,j]=-1) then
+    begin
+      napr:=3;
+    end;
+    if (j+1<=n-1) and (pole[i,j+1]=-1) then
+    begin
+      napr:=2;
+    end;    
+    if (i-1>0) and (pole[i-1,j]=-1) then
+    begin
+      napr:=1;
+    end;
+    if (j-1>0) and (pole[i,j-1]=-1) then
+    begin
+      napr:=4;
+    end;
+  end;
+  if (i+1<=n-1) and (pole[i+1,j]<t) and (pole[i+1,j]>0) then
+  begin
+    prov2_1(i+1,j,t-1,pole);
+  end;
+  if (i-1>0) and (pole[i-1,j]<t) and (pole[i-1,j]>0) then
+  begin
+    prov2_1(i-1,j,t-1,pole);
+  end;
+  if (j+1<=n-1) and (pole[i,j+1]<t) and (pole[i,j+1]>0) then
+  begin
+    prov2_1(i,j+1,t-1,pole);
+  end;
+  if (j-1>0) and (pole[i,j-1]<t) and (pole[i,j-1]>0) then
+  begin
+    prov2_1(i,j-1,t-1,pole);
+  end;
+end;
+
+procedure prov2;      //Определение стороны в которую надо идти стрелки
+var  i1,j1,i0,j0,t,min:integer;
+     p:Tpole;
+     pr:boolean;
+begin
+  for I1:=1 to 11 do
+    for j1:=1 to 11 do
+    begin
+      p[i1,j1]:=pole[i1,j1];
+      if p[i1,j1]=1 then
+        p[i1,j1]:=-12;
+      if p[i1,j1]=3 then
+        p[i1,j1]:=-10;
+      if p[i1,j1]=2 then
+        p[i1,j1]:=-1;
+    end;
+  t:=-1;
+  repeat
+  pr:=true;
+  for i1:=1 to n-1 do
+    for j1:=1 to n-1 do
+      if (t=p[i1,j1]) then
+      begin
+        if t=-1 then
+          t:=0;
+        if pr then
+          pr:=not prov2_0(i1,j1,t,p)
+        else
+          prov2_0(i1,j1,t,p);
+        if p[i1,j1]=-1 then
+          t:=p[i1,j1];
+      end;
+  if t=-1 then
+    t:=0;
+  inc(t);
+  until pr;  
+  DrawP(p);
+  min:=t;
+  for i1:=1 to n-1 do
+    for j1:=1 to n-1 do
+      if p[i1,j1]=-12 then
+      begin
+        if (i1+1<=n-1) and (p[i1+1,j1]<min) and (p[i1+1,j1]>0) then
+        begin
+          min:=p[i1+1,j1];
+          i0:=i1+1;
+          j0:=j1;
+        end;
+        if (i1-1>0) and (p[i1-1,j1]<min) and (p[i1-1,j1]>0) then
+        begin
+          min:=p[i1-1,j1];
+          i0:=i1-1;
+          j0:=j1;
+        end;
+        if (j1+1<=n-1) and (p[i1,j1+1]<min) and (p[i1,j1+1]>0) then
+        begin
+          min:=p[i1,j1+1];
+          i0:=i1;
+          j0:=j1+1;
+        end;
+        if (j1-1>0) and (p[i1,j1-1]<min) and (p[i1,j1-1]>0) then
+        begin
+          min:=p[i1,j1-1];
+          i0:=i1;
+          j0:=j1-1;
+        end;
+      end;
+    form5.caption:=inttostr(i0)+' '+inttostr(j0)+' '+inttostr(min);
+  if min=1 then
+    prov0;
+  prov2_1(i0,j0,min,p);
+  case napr of
+  1:  begin
+      form5.Caption:='Вниз';
+      pole[i2,j2]:=0;
+      i2:=i2+1;
+      pole[i2,j2]:=2;
+      end;
+  2:  begin
+      form5.Caption:='Налево';   
+      pole[i2,j2]:=0;
+      j2:=j2-1;                
+      pole[i2,j2]:=2;
+      end;
+  3:  begin
+      form5.Caption:='Вверх';  
+      pole[i2,j2]:=0;
+      i2:=i2-1;
+      pole[i2,j2]:=2;
+      end;
+  4:  begin
+      form5.Caption:='Направо';   
+      pole[i2,j2]:=0;
+      j2:=j2+1;                 
+      pole[i2,j2]:=2;
+      end;
+  end;
+end;
+
+procedure gener;
+var l,i,j:integer;
+begin
+  for i:=1 to n do
+    for j:=1 to n do
+      pole[i,j]:=0;
+  case unit6.Sloj of
+    1: out:=random(3)+3;
+    2: out:=random(4)+4;
+    3: out:=random(5)+6;
+  end;
+  for l:=1 to out do
+  begin
+    repeat
+      i:=random(10)+1;
+      j:=random(10)+1;
+    until pole[i,j]=0;
+    pole[i,j]:=1;
+  end;
+  repeat
+    repeat
+      i:=random(10)+1;
+      j:=random(10)+1;
+    until pole[i,j]=0;
+  until prov1(i,j)=0;
+  pole[i,j]:=2;
+  i2:=i;
+  j2:=j;
+end;
+
+procedure DrawPole;
+var i,j,x,y:integer;
+begin
+  for i:=1 to n do
+    for j:=1 to n do
+      with form5.paintbox1.canvas do
+      begin
+        pen.width:=1;
+        pen.color:=clblack;
+        case pole[i,j] of
+          0: brush.color:=clwhite;
+          1: brush.color:=cllime;
+          2: brush.color:=clyellow;
+          3: brush.color:=clred;
+        end;
+        x:=x0+(j-1)*dx;
+        y:=y0+(i-1)*dy;
+        rectangle(x,y,x+dx,y+dy);
+      end;
+end;
+
+procedure TForm5.Button1Click(Sender: TObject);
+begin   
+  Form2.Show;
+  Form5.Hide; 
+end;
+
+procedure TForm5.Button2Click(Sender: TObject);
+begin      
+  gener;
+  DrawPole;
+end;
+
+procedure TForm5.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+	Form1.close;
+end;
+
+procedure TForm5.FormCreate(Sender: TObject);
+begin
+  randomize;
+  paintbox1.width:=n*dx;
+  paintbox1.height:=n*dy;
+end;
+
+
+
+procedure TForm5.PaintBox1MouseDown(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+var i,j:integer;
+begin
+  i:=(y-y0 )div dy +1;
+  j:=(x-x0) div dx +1;
+  if pole[i,j]=0 then
+  begin
+    pole[i,j]:=3;    
+    DrawPole;
+    prov2;
+  end;
+end;
+
+end.
